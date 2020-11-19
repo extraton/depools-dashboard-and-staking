@@ -12,7 +12,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
-        "ewll/crud-bundle": "^2.0",
+        "ewll/crud-bundle": "^2.0.1",
         "ewll/log-extra-data-bundle": "^1.0",
         "extraton/php-ton-client": "^1.0.1",
         "phpdocumentor/reflection-docblock": "^5.2",

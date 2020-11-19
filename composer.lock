@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "459b0e3cebb5ab3f4c765cc3790b8c4c",
+    "content-hash": "06eb18c2e7de61e94c6700233ff96623",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1397,16 +1397,16 @@
         },
         {
             "name": "ewll/crud-bundle",
-            "version": "2.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ewll/crud-bundle.git",
-                "reference": "3695db7a11770fd40d44cac6db07636f76c499ea"
+                "reference": "b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ewll/crud-bundle/zipball/3695db7a11770fd40d44cac6db07636f76c499ea",
-                "reference": "3695db7a11770fd40d44cac6db07636f76c499ea",
+                "url": "https://api.github.com/repos/ewll/crud-bundle/zipball/b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b",
+                "reference": "b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b",
                 "shasum": ""
             },
             "require": {
@@ -1434,7 +1434,7 @@
                 }
             ],
             "description": "Crud Bundle",
-            "time": "2020-11-18T09:51:26+00:00"
+            "time": "2020-11-19T11:13:20+00:00"
         },
         {
             "name": "ewll/log-extra-data-bundle",
@@ -7907,7 +7907,8 @@
         "php": ">=7.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-bcmath": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"

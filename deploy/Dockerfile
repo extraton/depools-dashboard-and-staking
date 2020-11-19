@@ -8,3 +8,5 @@ RUN cd /var/www/html; \
     composer dump-autoload -o; \
     composer dump-env prod; \
     rm -rf .env deploy
+
+RUN mkdir /var/log/app/depools -p; chmod 777 /var/log/app -R
