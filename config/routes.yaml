@@ -1,0 +1,7 @@
+ewll_crud:
+  resource: '@EwllCrudBundle/Resources/config/routing.yaml'
+  prefix: '/crud'
+
+index:
+  path: /
+  controller: App\Controller\IndexController::index

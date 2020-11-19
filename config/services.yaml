@@ -1,0 +1,28 @@
+imports:
+  - { resource: services/command.yaml}
+  - { resource: services/crud-unit.yaml}
+
+parameters:
+  env: '%env(APP_ENV)%'
+  siteName: '%env(SITE_NAME)%'
+  domain: '%env(DOMAIN)%'
+  version: '%env(APP_VERSION)%'
+
+services:
+  _defaults:
+    autowire: false      # Automatically injects dependencies in your services.
+    autoconfigure: false # Automatically registers your services as commands, event subscribers, etc.
+
+  App\Repository\:
+    resource: '../src/Repository'
+    autowire: true
+    tags: ['doctrine.repository_service']
+
+  App\Controller\IndexController:
+    tags: ['controller.service_arguments']
+    calls: [[setContainer, ['@service_container']]]
+    arguments:
+      - '%siteName%'
+      - '%domain%'
+
+  App\Ton:

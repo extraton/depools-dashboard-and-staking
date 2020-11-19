@@ -1,0 +1,8 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    globals:
+        version: '%env(APP_VERSION)%'
+        domain: '%env(DOMAIN)%'
+        siteName: '%env(SITE_NAME)%'
+        env: '%env(APP_ENV)%'
+        front_path: '%env(FRONT_PATH)%'
