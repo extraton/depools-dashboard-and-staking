@@ -14,5 +14,5 @@ yarn install
 yarn run build
 cd ${dir}/build
 cp -R ${dir}/build/front/dist/* ${dir}/build/public/
-rm -rf ./{.git,.env,front,deploy}
+rm -rf ./{.git,front,deploy}
 docker build -f ../deploy/Dockerfile -t extraton-depool:${1} .
