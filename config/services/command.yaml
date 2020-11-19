@@ -12,12 +12,3 @@ services:
       - '@App\Ton'
     tags:
       - { name: 'console.command', command: 'depool:list:update' }
-
-  App\Command\AppendDepoolRoundCommand:
-    parent: App\Command\AbstractCommand
-    arguments:
-      - '@logger'
-      - '@doctrine.orm.entity_manager'
-      - '@App\Ton'
-    tags:
-      - { name: 'console.command', command: 'depool:rounds:append' }

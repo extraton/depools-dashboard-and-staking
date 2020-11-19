@@ -27,10 +27,10 @@ spec:
         spec:
             containers:
                 -   name: depool-nginx
-                    image: docker.pkg.github.com/extraton/docs/extraton-depool:latest
+                    image: extraton/depool-dashboard:0.1.11
                     ports: [{containerPort: 80}]
-            imagePullSecrets:
-                -   name: github-registry
+                    command: ['/bin/bash']
+                    args: ['-c', "php-fpm --nodaemonize & nginx -g 'daemon off;'"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,7 +48,6 @@ spec:
         spec:
             containers:
                 -   name: depool-cron
-                    image: docker.pkg.github.com/extraton/docs/extraton-depool:latest
-                    ports: [{containerPort: 80}]
-            imagePullSecrets:
-                -   name: github-registry
+                    image: extraton/depool-dashboard:0.1.11
+                    command: ['/bin/bash']
+                    args: ['-c', "crontab /var/www/html/config/cron && crond -n"]
