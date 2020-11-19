@@ -7,8 +7,8 @@ RUN dnf -y module enable php:remi-7.4
 
 RUN dnf -y install wget nginx mysql supervisor cronie php php-json php-bcmath php-gd php-zip php-mysql php-ffi
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer; \
     rm -f composer-setup.php
 
 RUN mkdir /run/php-fpm
