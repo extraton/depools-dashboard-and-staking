@@ -19,6 +19,6 @@
 public/fonts
 .env
 .env.prod
-public/fonts
 public/favicon.png
 public/tonclient.wasm
+/build/
