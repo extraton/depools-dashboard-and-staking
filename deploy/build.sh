@@ -15,4 +15,4 @@ yarn run build
 cd ${dir}/build
 cp -R ${dir}/build/front/dist/* ${dir}/build/public/
 rm -rf ./{.git,front,deploy}
-docker build -f ../deploy/Dockerfile -t extraton-depool:${1} .
+docker build -f ../deploy/Dockerfile -t extraton/depool-dashboard:${1} .
