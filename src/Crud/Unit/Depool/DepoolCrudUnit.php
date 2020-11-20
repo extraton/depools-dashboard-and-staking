@@ -53,12 +53,23 @@ class DepoolCrudUnit extends UnitAbstract implements
             'stakes' => function (Depool $depool) {
                 $stakes = $depool->getStakes();
                 $total = '0';
+                $items = [];
                 foreach ($stakes as $stake) {
                     $total = bcadd($total, hexdec($stake['info']['total']));
+                    $items[] = [
+                        'address' => $stake['address'],
+                        'info' => [
+                            'total' => hexdec($stake['info']['total']),
+                            'withdrawValue' => hexdec($stake['info']['withdrawValue']),
+                            'reinvest' => $stake['info']['reinvest'],
+                            'reward' => hexdec($stake['info']['reward']),
+                        ],
+                    ];
                 }
                 return [
                     'participantsNum' => count($stakes),
                     'total' => $total,
+                    'items' => $items
                 ];
             },
         ];

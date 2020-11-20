@@ -4,7 +4,18 @@
     <div>
       <v-app-bar>
         <v-icon left>mdi-diamond-stone</v-icon>
-        <v-toolbar-title>FreeTON Depool Dashboard</v-toolbar-title>
+        <v-toolbar-title>FreeTON Depool Dashboard and Staking</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn href="https://t.me/extraton" target="_blank" text outlined>
+          <v-icon left>mdi-telegram</v-icon>
+          <span>Support</span>
+        </v-btn>
+        <template v-slot:extension>
+          <v-tabs align-with-title>
+            <v-tab :to="{name: 'main'}" exact>Depools List</v-tab>
+            <v-tab :to="{name: 'my-stakes'}">My Stakes</v-tab>
+          </v-tabs>
+        </template>
       </v-app-bar>
     </div>
 

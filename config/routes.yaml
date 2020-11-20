@@ -3,5 +3,8 @@ ewll_crud:
   prefix: '/crud'
 
 index:
-  path: /
+  path: /{route}
   controller: App\Controller\IndexController::index
+  methods: [GET]
+  requirements: {route: '^.+'}
+  defaults: {route: null}

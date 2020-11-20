@@ -1,5 +1,42 @@
 <template>
-  <div class="companyList">
+  <div>
+    <v-dialog v-model="dialogStaked" max-width="500">
+      <v-card>
+        <v-card-title>
+          Congratulations
+        </v-card-title>
+        <v-card-text>
+          <p>You have successful staked!</p>
+          <p>You can see result in the page My Stakes in 1 minute.</p>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="dialogStaked = false" color="primary" text>ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogInstall" max-width="500">
+      <v-card>
+        <v-card-title>
+          Install extraTON extension
+        </v-card-title>
+        <v-card-text>
+          <p>In order to stake you need to install extraTON extension.</p>
+          <p>Go to <a href="https://chrome.google.com/webstore/detail/extraton/hhimbkmlnofjdajamcojlcmgialocllm"
+                      target="_blank">Chrome Store</a>.</p>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="dialogInstall = false" color="primary" text>ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="stakingDepool"/>
+
     <v-data-table
         :headers="headers"
         :items="items"
@@ -12,32 +49,21 @@
         :sort-desc="[true]"
     >
       <template v-slot:top>
+        <table-search-toolbar @search="find" @added="loadItems"/>
       </template>
       <template slot="item" slot-scope="props">
         <tr>
           <td>
-            <span class="text-overline">
-              {{ props.item.address.substr(0, 8) }}...{{ props.item.address.substr(-6) }}
-            </span>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs"
-                       v-on="on"
-                       v-clipboard="props.item.address"
-                       @click="$snack.success({text: 'Copied'})"
-                       icon small
-                >
-                  <v-icon small>mdi-content-copy</v-icon>
-                </v-btn>
-              </template>
-              <span>Copy address</span>
-            </v-tooltip>
+            <addr :address="props.item.address"/>
           </td>
           <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
           <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
           <td style="text-align:center">
-            <span>{{ convertFromNano(props.item.stakes.total) }}</span>
+            <span>{{ utils.convertFromNano(props.item.stakes.total) }}</span>
             <v-icon color="primary" right small>mdi-diamond-stone</v-icon>
+          </td>
+          <td>
+            <v-btn @click="stake(props.item.id)" color="primary" x-small>stake now</v-btn>
           </td>
         </tr>
       </template>
@@ -46,12 +72,17 @@
 </template>
 
 <script>
+import utils from "@/utils";
+import Addr from "@/components/Addr";
+import StakingDialog from "@/components/StakingDialog";
+import TableSearchToolbar from "@/components/TableSearchToolbar";
 
 export default {
-  components: {},
+  components: {TableSearchToolbar, StakingDialog, Addr},
   data() {
     return {
       config: global.config,
+      utils,
       search: '',
       items: [],
       listing: null,
@@ -59,8 +90,12 @@ export default {
         {text: 'Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Investor Fee', value: 'params.validatorRewardFraction', align: 'center', sortable: true,},
         {text: 'Participants', value: 'stakes.participantsNum', align: 'center', sortable: true,},
-        {text: 'Total Stake', value: 'stakes.total', align: 'center', sortable: true},
+        {text: 'Total Assets', value: 'stakes.total', align: 'center', sortable: true},
+        {sortable: false},
       ],
+      dialogInstall: false,
+      dialogStaked: false,
+      stakingDepoolId: null,
     }
   },
   created() {
@@ -75,6 +110,14 @@ export default {
   mounted() {
     this.init()
   },
+  computed: {
+    stakingDepool() {
+      if (null === this.stakingDepoolId) {
+        return null;
+      }
+      return this.items.find(o => o.id === this.stakingDepoolId);
+    }
+  },
   methods: {
     init() {
       this.loadItems();
@@ -85,10 +128,13 @@ export default {
     find(query) {
       this.search = query;
     },
-    convertFromNano(amountNano) {
-      const amountBigInt = BigInt(amountNano);
-      const integer = amountBigInt / BigInt('1000000000');
-      return integer.toLocaleString();
+    stake(id) {
+      if (typeof window.freeton === 'undefined') {
+        this.dialogInstall = true;
+        return;
+      }
+      this.stakingDepoolId = id;
+      this.$refs.stakingDialog.open();
     },
   }
 }
