@@ -121,7 +121,7 @@ export default {
 
         const provider = new freeton.providers.ExtensionProvider(window.freeton);
         const network = await provider.getNetwork();
-        if (network.id !== 2) {
+        if (network.id !== 1) {
           this.error = 'Please, switch network to main.ton.dev in extraTON extension.';
           return;
         }

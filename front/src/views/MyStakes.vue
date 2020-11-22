@@ -171,7 +171,7 @@ export default {
         const provider = new freeton.providers.ExtensionProvider(window.freeton);
         this.address = (await provider.getSigner()).getWallet().getAddress();
         const network = await provider.getNetwork();
-        this.isMainNet = network.id === 2;
+        this.isMainNet = network.id === 1;
         this.init();
       }
     }.bind(this), 1000);
@@ -207,7 +207,7 @@ export default {
       try {
         const provider = new freeton.providers.ExtensionProvider(window.freeton);
         const network = await provider.getNetwork();
-        if (network.id !== 2) {
+        if (network.id !== 1) {
           this.$snack.success({text: 'Please, switch network to main.ton.dev in extraTON extension.'})
           return;
         }
@@ -234,7 +234,7 @@ export default {
       try {
         const provider = new freeton.providers.ExtensionProvider(window.freeton);
         const network = await provider.getNetwork();
-        if (network.id !== 2) {
+        if (network.id !== 1) {
           this.$snack.success({text: 'Please, switch network to main.ton.dev in extraTON extension.'})
           return;
         }
