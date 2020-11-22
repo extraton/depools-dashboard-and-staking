@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "freeton": "^0.3.2",
     "roboto-fontface": "*",
+    "semver": "^7.3.2",
     "ton-client-web-js": "^0.28.0",
     "vue": "^2.6.11",
     "vue-clipboards": "^1.3.0",

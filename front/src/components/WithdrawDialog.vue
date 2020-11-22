@@ -3,13 +3,12 @@
     <v-form v-if="depool" v-model="valid" ref="form">
       <v-card>
         <v-card-title>
-          Stake
+          Withdraw
         </v-card-title>
         <v-card-text>
           <v-alert type="warning" border="left" outlined dense>
-            Warning!
-            <br/>The application is in beta testing stage.
-            <br/>Available for testing purposes only.
+            Attention!
+            <br/>Withdraw takes up to 50 hours.
           </v-alert>
           <v-simple-table>
             <template v-slot:default>
@@ -21,27 +20,17 @@
                 </td>
               </tr>
               <tr>
-                <td>Investor profit fee</td>
-                <td>{{ depool.params.validatorRewardFraction }}%</td>
-              </tr>
-              <tr>
-                <td>Assurance</td>
-                <td>{{ utils.convertFromNano(depool.params.validatorAssurance) }}</td>
-              </tr>
-              <tr>
-                <td>Participants</td>
-                <td>{{ depool.stakes.participantsNum }}</td>
-              </tr>
-              <tr>
-                <td>Total Assets</td>
-                <td>{{ utils.convertFromNano(depool.stakes.total) }}</td>
+                <td>Available amount</td>
+                <td>{{ availableCrystal }}</td>
               </tr>
               </tbody>
             </template>
           </v-simple-table>
+          <v-checkbox v-model="isWithdrawAll" label="Withdraw all"/>
           <v-text-field v-model="amount" type="number"
-                        :label="`Crystals Amount (${minStakeCrystal} minimum)`"
-                        :rules="[rules.required, rules.integer, rules.greaterOrEqualMinimum, rules.lessOrEqualTestLimit]"
+                        :label="`Crystals Amount`"
+                        :rules="amountRules"
+                        :disabled="isWithdrawAll"
                         style="margin-top:15px"
                         outlined/>
           <div class="red--text">{{ error }}</div>
@@ -50,7 +39,7 @@
         <v-card-actions>
           <v-btn @click="dialog = false" :disabled="loading" text>cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn @click="stake" :disabled="!valid" :loading="loading" color="primary" text>stake</v-btn>
+          <v-btn @click="withdraw" :disabled="!valid" :loading="loading" color="primary" text>withdraw</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
@@ -75,43 +64,37 @@ export default {
     rules: {
       required: value => !!value || 'Required.',
       integer: value => Number.isInteger(value - 0) || 'Integer only',
-      greaterOrEqualMinimum(value) {
-        return value - 0 >= t.minStakeCrystalNoFormat || `Must be greater or equal ${t.minStakeCrystal}.`
+      moreZero(value) {
+        return value - 0 > 0 || `Must be greater then zero.`
       },
-      lessOrEqualTestLimit(value) {
-        return value - 0 <= 50 || `Staking limited up to 50 crystals per time while beta testing.`
+      lessOrEqualAvailable(value) {
+        return value - 0 <= t.availableCrystalNoFormat || `Must be greater or equal ${t.availableCrystal}.`
       },
     },
     error: '',
     loading: false,
+    isWithdrawAll: false,
   }),
   created() {
     t = this;
   },
   computed: {
-    minStakeCrystal() {
-      return utils.convertFromNano(this.depool.params.minStake);
+    availableCrystal() {
+      return utils.convertFromNano(this.depool.stakes.my.total);
     },
-    minStakeCrystalNoFormat() {
-      return utils.convertFromNano(this.depool.params.minStake, true);
-    }
-  },
-  watch: {
-    depool: {
-      handler(depool) {
-        if (null !== depool) {
-          this.amount = this.minStakeCrystalNoFormat;
-        }
-      },
-      deep: true,
-    }
+    availableCrystalNoFormat() {
+      return utils.convertFromNano(this.depool.stakes.my.total, true);
+    },
+    amountRules() {
+      return this.isWithdrawAll ? [] : [this.rules.required, this.rules.integer, this.rules.moreZero, this.rules.lessOrEqualAvailable];
+    },
   },
   methods: {
     open() {
       this.error = '';
       this.dialog = true;
     },
-    async stake() {
+    async withdraw() {
       this.error = '';
       this.loading = true;
       try {
@@ -128,14 +111,13 @@ export default {
         await utils.sendTransactionToDepool(
           provider,
           this.depool.address,
-          'addOrdinaryStake',
-          {stake: utils.convertToNano(this.amount)},
-          (BigInt(utils.convertToNano(this.amount)) + BigInt(utils.transactionAdditionalFee)).toString()
+          'withdrawPart',
+          {withdrawValue: utils.convertToNano(this.amount)},
+          utils.transactionAdditionalFee
         );
         this.$emit('success');
         this.dialog = false;
       } catch (e) {
-        console.error(e);
         if (e.code !== 1000/*Canceled by user*/) {
           this.error = undefined !== e.text ? e.text : 'Unknown error';
         }

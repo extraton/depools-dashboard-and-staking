@@ -23,7 +23,7 @@
           Install extraTON extension
         </v-card-title>
         <v-card-text>
-          <p>In order to stake you need to install extraTON extension.</p>
+          <p>In order to stake you need to install extraTON extension with minimal version 0.4.0.</p>
           <p>Go to <a href="https://chrome.google.com/webstore/detail/extraton/hhimbkmlnofjdajamcojlcmgialocllm"
                       target="_blank">Chrome Store</a>.</p>
         </v-card-text>
@@ -41,12 +41,12 @@
         :headers="headers"
         :items="items"
         :mobile-breakpoint="100"
-        hide-default-footer
         :loading="listing.loading"
         :items-per-page="10000"
         :search="search"
         :sort-by="['stakes.total']"
         :sort-desc="[true]"
+        hide-default-footer
     >
       <template v-slot:top>
         <table-search-toolbar @search="find" @added="loadItems"/>
@@ -63,7 +63,9 @@
             <v-icon color="primary" right small>mdi-diamond-stone</v-icon>
           </td>
           <td>
-            <v-btn @click="stake(props.item.id)" color="primary" x-small>stake now</v-btn>
+            <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
+              stake now
+            </v-btn>
           </td>
         </tr>
       </template>
@@ -96,6 +98,7 @@ export default {
       dialogInstall: false,
       dialogStaked: false,
       stakingDepoolId: null,
+      isStakingDialogOpening: false,
     }
   },
   created() {
@@ -128,13 +131,18 @@ export default {
     find(query) {
       this.search = query;
     },
-    stake(id) {
-      if (typeof window.freeton === 'undefined') {
-        this.dialogInstall = true;
-        return;
+    async stake(id) {
+      this.isStakingDialogOpening = true;
+      try {
+        if (!await utils.isExtensionAvailableWithMinimalVersion()) {
+          this.dialogInstall = true;
+          return;
+        }
+        this.stakingDepoolId = id;
+        this.$refs.stakingDialog.open();
+      } finally {
+        this.isStakingDialogOpening = false;
       }
-      this.stakingDepoolId = id;
-      this.$refs.stakingDialog.open();
     },
   }
 }

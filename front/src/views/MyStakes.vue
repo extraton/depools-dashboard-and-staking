@@ -1,74 +1,111 @@
 <template>
-  <div>
+  <div class="myStakes">
     <v-overlay :value="overlay">
       <v-progress-circular indeterminate size="64"/>
     </v-overlay>
-    <v-dialog v-model="dialogSuccess" max-width="500">
+    <v-dialog v-model="dialogWithdrew" max-width="500">
       <v-card>
         <v-card-title>
           Congratulations
         </v-card-title>
         <v-card-text>
           <p>You have successful requested unstaking process.</p>
-          <p>Assets will come back to your wallet within one day.</p>
-          <p>Status of your stake in this table may persist some time, don't worry.</p>
+          <p>Assets will come back to your wallet within 50 hours.</p>
+          <p>Refresh page in 1-2 minute to see changes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="dialogSuccess = false" color="primary" text>ok</v-btn>
+          <v-btn @click="dialogWithdrew = false" color="primary" text>ok</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-card v-if="!isExtensionAvailable">
+    <v-dialog v-model="dialogWithdrawCanceled" max-width="500">
+      <v-card>
+        <v-card-title>
+          Withdraw canceled
+        </v-card-title>
+        <v-card-text>
+          <p>Withdraw successfully canceled.</p>
+          <p>Refresh page in 1-2 minute to see changes.</p>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="dialogWithdrawCanceled = false" color="primary" text>ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-card v-if="!isExtensionAvailableWithMinimalVersion">
       <v-card-title>
         Install extraTON extension
       </v-card-title>
       <v-card-text>
-        <p>In order to stake you need to install extraTON extension.</p>
+        <p>In order to stake you need to install extraTON extension with minimal version 0.4.0.</p>
         <p>Go to <a href="https://chrome.google.com/webstore/detail/extraton/hhimbkmlnofjdajamcojlcmgialocllm"
                     target="_blank">Chrome Store</a>.</p>
       </v-card-text>
     </v-card>
-    <v-card v-else-if="null === isMainNet" style="height:30px" loading/>
     <v-card v-else-if="!isMainNet">
       <v-card-title>
         Wrong network.
       </v-card-title>
       <v-card-text>
-        <p>Please, change network to main.ton.dev in extraTON extension.</p>
+        <p>Please, switch network to main.ton.dev in extraTON extension.</p>
       </v-card-text>
     </v-card>
-    <v-data-table
-        v-else
+
+    <template v-else>
+      <withdraw-dialog @success="dialogWithdrew = true" ref="withdrawDialog" :depool="withdrawDepool"/>
+      <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="withdrawDepool"/>
+      <v-data-table
         :headers="headers"
         :items="items"
         :mobile-breakpoint="100"
-        hide-default-footer
         :items-per-page="10000"
         :search="search"
         :sort-by="['stakes.total']"
         :sort-desc="[true]"
         :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
-    >
-      <template v-slot:top>
-        <table-search-toolbar @search="find" @added="loadItems"/>
-      </template>
-      <template slot="item" slot-scope="props">
-        <tr>
-          <td>
-            <addr :address="props.item.address"/>
-          </td>
-          <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
-          <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
-          <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
-          <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'yes' : 'no' }}</td>
-          <td>
-            <v-btn @click="withdrawAll(props.item.id)" color="secondary" x-small>withdraw all</v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
+        :loading="listing.loading"
+        class="myStakes__table"
+        hide-default-footer
+      >
+        <template v-slot:top>
+          <table-search-toolbar @search="find" @added="loadItems"/>
+        </template>
+        <template slot="item" slot-scope="props">
+          <tr>
+            <td>
+              <addr :address="props.item.address"/>
+            </td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
+            <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'staked' : 'withdrawing' }}</td>
+            <td class="myStakes__table__actions">
+              <div>
+                <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
+              </div>
+              <div>
+                <v-btn v-if="props.item.stakes.my.reinvest" @click="withdraw(props.item.id)" color="secondary" x-small>
+                  withdraw
+                </v-btn>
+              </div>
+              <template v-if="!props.item.stakes.my.reinvest || props.item.stakes.my.withdrawValue - 0 > 0">
+                <div>
+                  <v-btn @click="ticktock(props.item.id)" x-small>ticktock</v-btn>
+                </div>
+                <div>
+                  <v-btn @click="cancelWithdrawing(props.item.id)" color="warning" x-small>cancel withdrawing</v-btn>
+                </div>
+              </template>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+    </template>
+
   </div>
 </template>
 
@@ -76,13 +113,12 @@
 import utils from "@/utils";
 import freeton from "freeton";
 import Addr from "@/components/Addr";
-import {TONClient} from "ton-client-web-js";
-
-const depoolAbi = require('@/contracts/DePool.abi.json');
 import TableSearchToolbar from "@/components/TableSearchToolbar";
+import StakingDialog from "@/components/StakingDialog";
+import WithdrawDialog from "@/components/WithdrawDialog";
 
 export default {
-  components: {Addr, TableSearchToolbar},
+  components: {StakingDialog, WithdrawDialog, Addr, TableSearchToolbar},
   data() {
     return {
       config: global.config,
@@ -95,13 +131,16 @@ export default {
         {text: 'Total', value: 'stakes.my.total', align: 'center', sortable: true,},
         {text: 'Reward', value: 'stakes.my.reward', align: 'center', sortable: true,},
         {text: 'Withdraw', value: 'stakes.my.withdrawValue', align: 'center', sortable: true},
-        {text: 'Reinvest', value: 'stakes.my.reinvest', align: 'center', sortable: true},
+        {text: 'Status', value: 'stakes.my.reinvest', align: 'center', sortable: true},
         {sortable: false},
       ],
-      isExtensionAvailable: false,
-      isMainNet: null,
+      isExtensionAvailableWithMinimalVersion: true,
+      isMainNet: true,
       address: '',
-      dialogSuccess: false,
+      dialogWithdrew: false,
+      dialogWithdrawCanceled: false,
+      dialogStaked: false,
+      activeDepoolId: null,
       overlay: false,
     }
   },
@@ -109,6 +148,7 @@ export default {
     this.listing = this.$ewll.initListingForm(this, {
       url: '/crud/depool',
       sort: {id: 'desc'},
+      loading: true,
       success: function (response) {
         this.items = response.body.items.filter(function (depool) {
           for (const stake of depool.stakes.items) {
@@ -125,14 +165,25 @@ export default {
     });
   },
   async mounted() {
-    this.isExtensionAvailable = typeof window.freeton !== 'undefined';
-    const provider = new freeton.providers.ExtensionProvider(window.freeton);
-    this.address = (await provider.getSigner()).getWallet().getAddress();
-    const network = await provider.getNetwork();
-    this.isMainNet = network.id === 1;
-    this.init()
+    setTimeout(async function () {
+      this.isExtensionAvailableWithMinimalVersion = await utils.isExtensionAvailableWithMinimalVersion();
+      if (this.isExtensionAvailableWithMinimalVersion) {
+        const provider = new freeton.providers.ExtensionProvider(window.freeton);
+        this.address = (await provider.getSigner()).getWallet().getAddress();
+        const network = await provider.getNetwork();
+        this.isMainNet = network.id === 2;
+        this.init();
+      }
+    }.bind(this), 1000);
   },
-  computed: {},
+  computed: {
+    withdrawDepool() {
+      if (null === this.activeDepoolId) {
+        return null;
+      }
+      return this.items.find(o => o.id === this.activeDepoolId);
+    }
+  },
   methods: {
     init() {
       this.loadItems();
@@ -143,40 +194,82 @@ export default {
     find(query) {
       this.search = query;
     },
-    async withdrawAll(depoolId) {
+    withdraw(id) {
+      this.activeDepoolId = id;
+      this.$refs.withdrawDialog.open();
+    },
+    stake(id) {
+      this.activeDepoolId = id;
+      this.$refs.stakingDialog.open();
+    },
+    async cancelWithdrawing(depoolId) {
+      this.overlay = true;
       try {
-        this.overlay = true;
         const provider = new freeton.providers.ExtensionProvider(window.freeton);
         const network = await provider.getNetwork();
-        if (network.id !== 1) {
-          this.$snack.danger({text: 'Please, change network to main.ton.dev.'})
+        if (network.id !== 2) {
+          this.$snack.success({text: 'Please, switch network to main.ton.dev in extraTON extension.'})
           return;
         }
-        const client = await TONClient.create({servers: []});
-        const message = await client.contracts.createRunBody({
-          abi: depoolAbi,
-          function: 'withdrawAll',
-          params: {},
-          internal: true
-        });
-        const signer = await provider.getSigner();
-        const wallet = signer.getWallet();
         const depool = this.items.find(o => o.id === depoolId);
-        await wallet.transfer(depool.address, '500000000', true, message.bodyBase64);
-        this.dialogSuccess = true;
+        await utils.sendTransactionToDepool(
+          provider,
+          depool.address,
+          'cancelWithdrawal',
+          {},
+          utils.transactionAdditionalFee
+        );
+        this.dialogWithdrawCanceled = true;
       } catch (e) {
         console.error(e);
         if (e.code !== 1000/*Canceled by user*/) {
-          const error = undefined !== e.text ? e.text : 'Unknown error';
-          this.$snack.danger({text: error})
+          this.$snack.danger({text: undefined !== e.text ? e.text : 'Unknown error'})
         }
       } finally {
         this.overlay = false;
       }
-    }
+    },
+    async ticktock(depoolId) {
+      this.overlay = true;
+      try {
+        const provider = new freeton.providers.ExtensionProvider(window.freeton);
+        const network = await provider.getNetwork();
+        if (network.id !== 2) {
+          this.$snack.success({text: 'Please, switch network to main.ton.dev in extraTON extension.'})
+          return;
+        }
+        const depool = this.items.find(o => o.id === depoolId);
+        await utils.sendTransactionToDepool(
+          provider,
+          depool.address,
+          'ticktock',
+          {},
+          utils.transactionAdditionalFee
+        );
+        this.$snack.danger({text: 'Ticktock successfully sent.'})
+      } catch (e) {
+        console.error(e);
+        if (e.code !== 1000/*Canceled by user*/) {
+          this.$snack.danger({text: undefined !== e.text ? e.text : 'Unknown error'})
+        }
+      } finally {
+        this.overlay = false;
+      }
+    },
   }
 }
 </script>
 
 <style lang="scss">
+.myStakes {
+  &__table {
+    &__actions {
+      text-align: center;
+
+      div > button {
+        margin: 2px 0 !important;
+      }
+    }
+  }
+}
 </style>
