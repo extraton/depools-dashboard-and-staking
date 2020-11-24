@@ -17,7 +17,7 @@ const _ = {
 
 export default {
   transactionAdditionalFee: '500000000',
-  convertFromNano(amountNano, decimalNum = 0) {
+  convertFromNano(amountNano, decimalNum = null) {
     return new BigNumber(amountNano).dividedBy(new BigNumber('1000000000')).toFormat(decimalNum);
   },
   convertFromNanoToInt(amountNano, direction) {

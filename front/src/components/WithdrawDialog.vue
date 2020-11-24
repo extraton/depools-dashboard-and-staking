@@ -69,7 +69,7 @@ export default {
         return new BigNumber(value).isGreaterThan(new BigNumber('0')) || `Must be greater then zero.`
       },
       lessOrEqualAvailable(value) {
-        return new BigNumber(value).isLessThanOrEqualTo(t.availableCrystalInt) || `Must be greater or equal ${t.availableCrystalView}.`
+        return new BigNumber(value).isLessThanOrEqualTo(t.availableCrystalInt) || `Must be less or equal ${t.availableCrystalViewInt}.`
       },
     },
     error: '',
@@ -80,10 +80,16 @@ export default {
     t = this;
   },
   computed: {
+    availableCrystal() {
+      return new BigNumber(this.depool.stakes.my.total).minus(new BigNumber(this.depool.stakes.my.withdrawValue));
+    },
     availableCrystalInt() {
-      return utils.convertFromNanoToInt(this.depool.stakes.my.total, BigNumber.ROUND_FLOOR);
+      return utils.convertFromNanoToInt(this.availableCrystal, BigNumber.ROUND_FLOOR);
     },
     availableCrystalView() {
+      return utils.convertFromNano(this.availableCrystal);
+    },
+    availableCrystalViewInt() {
       return this.availableCrystalInt.toFormat();
     },
     amountRules() {

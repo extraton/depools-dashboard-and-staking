@@ -59,7 +59,7 @@
           <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
           <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
           <td style="text-align:center">
-            <span>{{ utils.convertFromNano(props.item.stakes.total) }}</span>
+            <span>{{ utils.convertFromNano(props.item.stakes.total, 0) }}</span>
             <v-icon color="primary" right small>mdi-diamond-stone</v-icon>
           </td>
           <td>

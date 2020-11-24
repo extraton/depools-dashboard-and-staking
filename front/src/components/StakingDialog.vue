@@ -26,7 +26,7 @@
               </tr>
               <tr>
                 <td>Assurance</td>
-                <td>{{ utils.convertFromNano(depool.params.validatorAssurance) }}</td>
+                <td>{{ utils.convertFromNano(depool.params.validatorAssurance, 0) }}</td>
               </tr>
               <tr>
                 <td>Participants</td>
@@ -34,7 +34,7 @@
               </tr>
               <tr>
                 <td>Total Assets</td>
-                <td>{{ utils.convertFromNano(depool.stakes.total) }}</td>
+                <td>{{ utils.convertFromNano(depool.stakes.total, 0) }}</td>
               </tr>
               </tbody>
             </template>

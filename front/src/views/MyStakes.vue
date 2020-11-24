@@ -79,9 +79,9 @@
             <td>
               <addr :address="props.item.address"/>
             </td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total, null) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward, null) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue, null) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
             <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'staked' : 'withdrawing' }}</td>
             <td class="myStakes__table__actions">
               <div>
