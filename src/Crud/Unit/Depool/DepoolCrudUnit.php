@@ -1,6 +1,8 @@
 <?php namespace App\Crud\Unit\Depool;
 
 use App\Entity\Depool;
+use App\Entity\Net;
+use Doctrine\ORM\EntityManagerInterface;
 use Ewll\CrudBundle\ReadViewCompiler\Transformer\Date;
 use Ewll\CrudBundle\Unit\ReadMethodInterface;
 use Ewll\CrudBundle\Unit\UnitAbstract;
@@ -8,10 +10,15 @@ use Ewll\CrudBundle\Unit\UnitAbstract;
 class DepoolCrudUnit extends UnitAbstract implements
     ReadMethodInterface
 {
-    const NAME = 'depool';
+    public const NAME = 'depool';
 
-    public function __construct()
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(
+        EntityManagerInterface $entityManager
+    )
     {
+        $this->entityManager = $entityManager;
     }
 
     public function getUnitName(): string
@@ -38,7 +45,15 @@ class DepoolCrudUnit extends UnitAbstract implements
     {
         return [
             'id',
+            'name',
             'address',
+            'link' => function (Depool $depool) {
+                return sprintf(
+                    "https://%s/accounts?section=details&id=%s",
+                    $depool->getNet()->getExplorer(),
+                    $depool->getAddress()
+                );
+            },
             'dateCreate' => new Date('createdTs', Date::FORMAT_DATE_TIME),
             'params' => function (Depool $depool) {
                 return [

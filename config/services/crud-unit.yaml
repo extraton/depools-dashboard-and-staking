@@ -1,4 +1,5 @@
 services:
   App\Crud\Unit\Depool\DepoolCrudUnit:
     tags: ['ewll.crud.unit']
-    arguments: []
+    arguments:
+      - '@doctrine.orm.entity_manager'

@@ -16,7 +16,7 @@
               <tr>
                 <td>Depool address</td>
                 <td>
-                  <addr :address="depool.address"/>
+                  <addr :address="depool.address" :link="depool.link"/>
                 </td>
               </tr>
               <tr>
@@ -115,13 +115,23 @@ export default {
           this.error = 'Please, switch network to main.ton.dev in extraTON extension.';
           return;
         }
-        await utils.sendTransactionToDepool(
-          provider,
-          this.depool.address,
-          'withdrawPart',
-          {withdrawValue: utils.convertToNano(this.amount)},
-          utils.transactionAdditionalFee
-        );
+        if (this.isWithdrawAll) {
+          await utils.sendTransactionToDepool(
+            provider,
+            this.depool.address,
+            'withdrawAll',
+            {},
+            utils.transactionAdditionalFee
+          );
+        } else {
+          await utils.sendTransactionToDepool(
+            provider,
+            this.depool.address,
+            'withdrawPart',
+            {withdrawValue: utils.convertToNano(this.amount)},
+            utils.transactionAdditionalFee
+          );
+        }
         this.$emit('success');
         this.dialog = false;
       } catch (e) {

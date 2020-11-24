@@ -22,6 +22,11 @@ class Net
     public $server;
 
     /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    public $explorer;
+
+    /**
      * @ORM\OneToMany(targetEntity="Depool", mappedBy="net")
      */
     public $depools;
@@ -34,5 +39,10 @@ class Net
     public function getServer()
     {
         return $this->server;
+    }
+
+    public function getExplorer()
+    {
+        return $this->explorer;
     }
 }

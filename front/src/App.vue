@@ -15,6 +15,7 @@
             <v-tabs-slider color="#272727"/>
             <v-tab :to="{name: 'main'}" exact>Depools List</v-tab>
             <v-tab :to="{name: 'my-stakes'}">My Stakes</v-tab>
+            <v-tab :to="{name: 'set-name'}">Set Depool Name</v-tab>
             <v-tab :to="{name: 'about'}">About</v-tab>
           </v-tabs>
         </template>

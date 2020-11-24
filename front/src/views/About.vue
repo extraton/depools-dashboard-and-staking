@@ -49,14 +49,15 @@ export default {}
 
 <style lang="scss">
 .about {
-  &__howToUse {
+  .v-card__text > div:not(:first-child) {
     margin-top: 20px;
+  }
+
+  &__howToUse {
     display: none;
   }
 
   &__faq {
-    margin-top: 20px;
-
     h3 {
       margin-bottom: 10px;
     }

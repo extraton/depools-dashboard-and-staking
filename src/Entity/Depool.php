@@ -33,6 +33,11 @@ class Depool
     private $net;
 
     /**
+     * @ORM\Column(type="string", length=16, nullable=true)
+     */
+    public $name;
+
+    /**
      * @ORM\Column(type="string", length=67)
      */
     public $address;
@@ -108,5 +113,16 @@ class Depool
     public function getStakes(): array
     {
         return $this->stakes;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getNet(): Net
+    {
+        return $this->net;
     }
 }

@@ -26,14 +26,17 @@ export default {
   convertToNano(amount) {
     return (BigInt(amount) * BigInt('1000000000')).toString();
   },
-  async sendTransactionToDepool(provider, address, functionName, params, amount) {
+  async generateMessage(abi, functionName, params = {}) {
     const client = await _.getClient();
-    const message = await client.contracts.createRunBody({
-      abi: depoolAbi,
+    return client.contracts.createRunBody({
+      abi,
       function: functionName,
       params,
       internal: true
     });
+  },
+  async sendTransactionToDepool(provider, address, functionName, params, amount) {
+    const message = await this.generateMessage(depoolAbi, functionName, params);
     const signer = await provider.getSigner();
     const wallet = signer.getWallet();
     await wallet.transfer(address, amount, true, message.bodyBase64);

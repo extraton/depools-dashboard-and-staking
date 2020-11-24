@@ -7,6 +7,7 @@ parameters:
   siteName: '%env(SITE_NAME)%'
   domain: '%env(DOMAIN)%'
   version: '%env(APP_VERSION)%'
+  namesContractAddress: '%env(NAMES_CONTRACT_ADDRESS)%'
 
 services:
   _defaults:

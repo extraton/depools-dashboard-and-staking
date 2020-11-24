@@ -38,15 +38,15 @@
     <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="stakingDepool"/>
 
     <v-data-table
-        :headers="headers"
-        :items="items"
-        :mobile-breakpoint="100"
-        :loading="listing.loading"
-        :items-per-page="10000"
-        :search="search"
-        :sort-by="['stakes.total']"
-        :sort-desc="[true]"
-        hide-default-footer
+      :headers="headers"
+      :items="items"
+      :mobile-breakpoint="100"
+      :loading="listing.loading"
+      :items-per-page="10000"
+      :search="search"
+      :sort-by="['stakes.total']"
+      :sort-desc="[true]"
+      hide-default-footer
     >
       <template v-slot:top>
         <table-search-toolbar @search="find" @added="loadItems"/>
@@ -54,7 +54,7 @@
       <template slot="item" slot-scope="props">
         <tr>
           <td>
-            <addr :address="props.item.address"/>
+            <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
           </td>
           <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
           <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
@@ -89,7 +89,8 @@ export default {
       items: [],
       listing: null,
       headers: [
-        {text: 'Address', value: 'address', align: 'start', sortable: false,},
+        {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
+        {text: 'Name', value: 'name', align: ' d-none', sortable: false,},
         {text: 'Investor Fee', value: 'params.validatorRewardFraction', align: 'center', sortable: true,},
         {text: 'Participants', value: 'stakes.participantsNum', align: 'center', sortable: true,},
         {text: 'Total Assets', value: 'stakes.total', align: 'center', sortable: true},

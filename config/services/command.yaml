@@ -12,3 +12,13 @@ services:
       - '@App\Ton'
     tags:
       - { name: 'console.command', command: 'depool:list:update' }
+
+  App\Command\UpdateDepoolNamesCommand:
+    parent: App\Command\AbstractCommand
+    arguments:
+      - '@logger'
+      - '@doctrine.orm.entity_manager'
+      - '@App\Ton'
+      - '%namesContractAddress%'
+    tags:
+      - { name: 'console.command', command: 'depool:names:update' }

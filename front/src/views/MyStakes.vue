@@ -77,7 +77,7 @@
         <template slot="item" slot-scope="props">
           <tr>
             <td>
-              <addr :address="props.item.address"/>
+              <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
             </td>
             <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
             <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
