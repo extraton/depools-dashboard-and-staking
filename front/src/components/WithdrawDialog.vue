@@ -21,7 +21,7 @@
               </tr>
               <tr>
                 <td>Available amount</td>
-                <td>{{ availableCrystal }}</td>
+                <td>{{ availableCrystalView }}</td>
               </tr>
               </tbody>
             </template>
@@ -50,6 +50,7 @@
 import freeton from "freeton";
 import utils from "@/utils";
 import Addr from "@/components/Addr";
+import BigNumber from "bignumber.js";
 
 let t = null;
 
@@ -65,10 +66,10 @@ export default {
       required: value => !!value || 'Required.',
       integer: value => Number.isInteger(value - 0) || 'Integer only',
       moreZero(value) {
-        return value - 0 > 0 || `Must be greater then zero.`
+        return new BigNumber(value).isGreaterThan(new BigNumber('0')) || `Must be greater then zero.`
       },
       lessOrEqualAvailable(value) {
-        return value - 0 <= t.availableCrystalNoFormat || `Must be greater or equal ${t.availableCrystal}.`
+        return new BigNumber(value).isLessThanOrEqualTo(t.availableCrystalInt) || `Must be greater or equal ${t.availableCrystalView}.`
       },
     },
     error: '',
@@ -79,11 +80,11 @@ export default {
     t = this;
   },
   computed: {
-    availableCrystal() {
-      return utils.convertFromNano(this.depool.stakes.my.total);
+    availableCrystalInt() {
+      return utils.convertFromNanoToInt(this.depool.stakes.my.total, BigNumber.ROUND_FLOOR);
     },
-    availableCrystalNoFormat() {
-      return utils.convertFromNano(this.depool.stakes.my.total, true);
+    availableCrystalView() {
+      return this.availableCrystalInt.toFormat();
     },
     amountRules() {
       return this.isWithdrawAll ? [] : [this.rules.required, this.rules.integer, this.rules.moreZero, this.rules.lessOrEqualAvailable];

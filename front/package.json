@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@mdi/font": "^3.6.95",
+    "bignumber.js": "^9.0.1",
     "core-js": "^3.6.5",
     "freeton": "^0.3.2",
     "roboto-fontface": "*",

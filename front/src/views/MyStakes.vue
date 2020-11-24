@@ -11,7 +11,7 @@
         <v-card-text>
           <p>You have successful requested unstaking process.</p>
           <p>Assets will come back to your wallet within 50 hours.</p>
-          <p>Refresh page in 1-2 minute to see changes.</p>
+          <p>Refresh page in 1-2 minutes to see changes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -27,7 +27,7 @@
         </v-card-title>
         <v-card-text>
           <p>Withdraw successfully canceled.</p>
-          <p>Refresh page in 1-2 minute to see changes.</p>
+          <p>Refresh page in 1-2 minutes to see changes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -79,9 +79,9 @@
             <td>
               <addr :address="props.item.address"/>
             </td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total, null) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward, null) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue, null) }}</td>
             <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'staked' : 'withdrawing' }}</td>
             <td class="myStakes__table__actions">
               <div>

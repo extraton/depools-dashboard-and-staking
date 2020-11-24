@@ -40,7 +40,7 @@
             </template>
           </v-simple-table>
           <v-text-field v-model="amount" type="number"
-                        :label="`Crystals Amount (${minStakeCrystal} minimum)`"
+                        :label="`Crystals Amount (${minStakeCrystalView} minimum)`"
                         :rules="[rules.required, rules.integer, rules.greaterOrEqualMinimum, rules.lessOrEqualTestLimit]"
                         style="margin-top:15px"
                         outlined/>
@@ -61,6 +61,7 @@
 import freeton from "freeton";
 import utils from "@/utils";
 import Addr from "@/components/Addr";
+import BigNumber from 'bignumber.js';
 
 let t = null;
 
@@ -74,12 +75,12 @@ export default {
     amount: 10,
     rules: {
       required: value => !!value || 'Required.',
-      integer: value => Number.isInteger(value - 0) || 'Integer only',
+      integer: value => new BigNumber(value).isInteger() || 'Integer only',
       greaterOrEqualMinimum(value) {
-        return value - 0 >= t.minStakeCrystalNoFormat || `Must be greater or equal ${t.minStakeCrystal}.`
+        return new BigNumber(value).isGreaterThanOrEqualTo(t.minStakeCrystalInt) || `Must be greater or equal ${t.minStakeCrystalView}.`
       },
       lessOrEqualTestLimit(value) {
-        return value - 0 <= 50 || `Staking limited up to 50 crystals per time while beta testing.`
+        return new BigNumber(value).isLessThanOrEqualTo(new BigNumber(50)) || `Staking limited up to 50 crystals per time while beta testing.`
       },
     },
     error: '',
@@ -89,18 +90,18 @@ export default {
     t = this;
   },
   computed: {
-    minStakeCrystal() {
-      return utils.convertFromNano(this.depool.params.minStake);
+    minStakeCrystalInt() {
+      return utils.convertFromNanoToInt(this.depool.params.minStake, BigNumber.ROUND_CEIL);
     },
-    minStakeCrystalNoFormat() {
-      return utils.convertFromNano(this.depool.params.minStake, true);
-    }
+    minStakeCrystalView() {
+      return this.minStakeCrystalInt.toFormat(0);
+    },
   },
   watch: {
     depool: {
       handler(depool) {
         if (null !== depool) {
-          this.amount = this.minStakeCrystalNoFormat;
+          this.amount = this.minStakeCrystalInt.toString();
         }
       },
       deep: true,

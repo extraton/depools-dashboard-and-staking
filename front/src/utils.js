@@ -1,6 +1,7 @@
 import {TONClient} from "ton-client-web-js";
 import freeton from "freeton";
 import semver from "semver";
+import BigNumber from 'bignumber.js';
 
 const depoolAbi = require('@/contracts/DePool.abi.json');
 
@@ -16,10 +17,11 @@ const _ = {
 
 export default {
   transactionAdditionalFee: '500000000',
-  convertFromNano(amountNano, noFormat = false) {
-    const amountBigInt = BigInt(amountNano);
-    const integer = amountBigInt / BigInt('1000000000');
-    return noFormat ? integer.toString() : integer.toLocaleString();
+  convertFromNano(amountNano, decimalNum = 0) {
+    return new BigNumber(amountNano).dividedBy(new BigNumber('1000000000')).toFormat(decimalNum);
+  },
+  convertFromNanoToInt(amountNano, direction) {
+    return new BigNumber(amountNano).dividedBy(new BigNumber('1000000000')).integerValue(direction);
   },
   convertToNano(amount) {
     return (BigInt(amount) * BigInt('1000000000')).toString();

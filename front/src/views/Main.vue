@@ -7,7 +7,7 @@
         </v-card-title>
         <v-card-text>
           <p>You have successful staked!</p>
-          <p>You can see result in the page My Stakes in 1 minute.</p>
+          <p>You can see result in the page My Stakes in 1-2 minutes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
