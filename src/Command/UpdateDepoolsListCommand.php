@@ -1,7 +1,9 @@
 <?php namespace App\Command;
 
 use App\Entity\Depool;
+use App\Entity\DepoolRound;
 use App\Entity\Net;
+use App\Repository\DepoolRoundRepository;
 use App\Ton;
 use Doctrine\ORM\EntityManagerInterface;
 use Extraton\TonClient\Entity\Abi\AbiType;
@@ -64,6 +66,20 @@ class UpdateDepoolsListCommand extends AbstractCommand
                 $depool->setStakes($stakes);
             }
             $this->entityManager->persist($depool);
+
+            /** @var DepoolRoundRepository $depoolRoundRepository */
+            $depoolRoundRepository = $this->entityManager->getRepository(DepoolRound::class);
+            $blockchainRounds = $this->getRounds($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
+            $lastDepoolRound = null !== $depool->getId()
+                ? $depoolRoundRepository->findLastRoundByDepool($depool)
+                : null;
+            foreach ($blockchainRounds as $blockchainRound) {
+                $rid = hexdec($blockchainRound['id']);
+                if (null === $lastDepoolRound || $rid > $lastDepoolRound->getRid()) {
+                    $round = new DepoolRound($depool, $rid, $blockchainRound);
+                    $this->entityManager->persist($round);
+                }
+            }
         }
         $this->entityManager->flush();
 
@@ -191,5 +207,33 @@ class UpdateDepoolsListCommand extends AbstractCommand
         }
 
         return $stakes;
+    }
+
+    private function getRounds(TonClient $tonClient, string $boc, string $address): array
+    {
+        $signer = Signer::fromNone();
+        $message = $tonClient->getAbi()->encodeMessage(
+            $this->depoolAbi,
+            $signer,
+            null,
+            new CallSet('getRounds'),
+            $address
+        )->getMessage();
+
+        $rounds = $tonClient->getTvm()->runTvm(
+            $message,
+            $boc,
+            null,
+            $this->depoolAbi
+        )->getDecodedOutput()->getOutput();
+
+        $isSorted = uksort($rounds['rounds'], function ($a, $b) {
+            return hexdec($a) <=> hexdec($b);
+        });
+        if (false === $isSorted) {
+            throw new \RuntimeException('Sorting failed');
+        }
+
+        return $rounds['rounds'];
     }
 }

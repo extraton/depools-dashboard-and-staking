@@ -2,11 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\DepoolRepository;
+use App\Repository\DepoolRoundRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=DepoolRoundRepository::class)
+ * @ORM\Table(
+ *    uniqueConstraints={
+ *        @ORM\UniqueConstraint(name="depool_id__rid",
+ *            columns={"depool_id", "rid"})
+ *    }
+ * )
  */
 class DepoolRound
 {
@@ -18,15 +24,15 @@ class DepoolRound
     private $id;
 
     /**
-     * @ORM\Column(type="bigint")
-     */
-    private $rid;
-
-    /**
      * @ORM\ManyToOne(targetEntity="Depool", inversedBy="rounds")
      * @ORM\JoinColumn(name="depool_id", referencedColumnName="id")
      */
     private $depool;
+
+    /**
+     * @ORM\Column(type="bigint")
+     */
+    private $rid;
 
     /**
      * @ORM\Column(type="json")
@@ -38,9 +44,10 @@ class DepoolRound
      */
     private $createdTs;
 
-    public function __construct(Depool $depool, array $data)
+    public function __construct(Depool $depool, int $rid, array $data)
     {
         $this->depool = $depool;
+        $this->rid = $rid;
         $this->data = $data;
         $this->createdTs = new \DateTime();
     }
@@ -53,5 +60,10 @@ class DepoolRound
     public function getCreatedTs(): ?\DateTimeInterface
     {
         return $this->createdTs;
+    }
+
+    public function getRid()
+    {
+        return $this->rid;
     }
 }
