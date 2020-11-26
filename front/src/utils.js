@@ -49,7 +49,7 @@ export default {
       const provider = new freeton.providers.ExtensionProvider(window.freeton);
       provider.getVersion().then(data => {
         const currentVersion = data.version || '0.0.0';
-        resolve(semver.satisfies(currentVersion, '>=0.4.0'));
+        resolve(semver.satisfies(currentVersion, '=0.4.0'));
       }).catch(() => {
         resolve(false);
       });
