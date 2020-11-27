@@ -80,7 +80,7 @@ export default {
         return new BigNumber(value).isGreaterThanOrEqualTo(t.minStakeCrystalInt) || `Must be greater or equal ${t.minStakeCrystalView}.`
       },
       lessOrEqualTestLimit(value) {
-        return new BigNumber(value).isLessThanOrEqualTo(new BigNumber(50)) || `Staking limited up to 50 crystals per time while beta testing.`
+        return new BigNumber(value).isLessThanOrEqualTo(new BigNumber(1000)) || `Staking limited up to 1000 crystals per time while beta testing.`
       },
     },
     error: '',
