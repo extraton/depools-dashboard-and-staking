@@ -2,7 +2,7 @@
   <div class="stability" ref="q">
     <v-sparkline
       :value="hackedValues"
-      :gradient="['#4bea1f', '#ffd200', '#f72047']"
+      :gradient="['#2196f3', '#2196f3', '#f72047']"
       smooth auto-draw
     />
   </div>
