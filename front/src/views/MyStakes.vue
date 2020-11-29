@@ -59,31 +59,73 @@
       <withdraw-dialog @success="dialogWithdrew = true" ref="withdrawDialog" :depool="withdrawDepool"/>
       <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="withdrawDepool"/>
       <v-data-table
-        :headers="headers"
-        :items="items"
-        :mobile-breakpoint="100"
-        :items-per-page="10000"
-        :search="search"
-        :sort-by="['stakes.total']"
-        :sort-desc="[true]"
-        :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
-        :loading="loading"
-        class="myStakes__table"
-        hide-default-footer
+          :headers="headers"
+          :items="items"
+          :mobile-breakpoint="100"
+          :items-per-page="10000"
+          :search="search"
+          :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
+          :loading="loading"
+          class="myStakes__list"
+          :sort-by="[sort[0]]"
+          :sort-desc="[sort[1]]"
+          hide-default-footer
       >
         <template v-slot:top>
-          <table-search-toolbar @search="find" @added="loadItems"/>
+          <table-search-toolbar @search="find" @added="loadItems">
+            <!--      DUPLICATE @TODO      -->
+            <v-select v-model="sort" :items="sortItems" label="Sort By" style="margin-left:10px" hide-details>
+              <template v-slot:item="{item}">
+                <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
+                <v-icon v-else left>mdi-arrow-up</v-icon>
+                {{ item.text }}
+              </template>
+              <template v-slot:selection="{item}">
+                <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
+                <v-icon v-else left>mdi-arrow-up</v-icon>
+                {{ item.text }}
+              </template>
+            </v-select>
+          </table-search-toolbar>
         </template>
         <template slot="item" slot-scope="props">
           <tr>
             <td>
               <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
             </td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward) }}</td>
-            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
-            <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'staked' : 'withdrawing' }}</td>
-            <td class="myStakes__table__actions">
+            <td style="text-align:center;padding:0">
+              <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
+            </td>
+            <td>
+              <table class="myStakes__list__infoTable">
+                <tr>
+                  <td class="text-caption">Total Stake:</td>
+                  <td>
+                    {{ utils.convertFromNano(props.item.stakes.my.total) }}
+                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-caption">Reward:</td>
+                  <td>
+                    {{ utils.convertFromNano(props.item.stakes.my.reward) }}
+                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-caption">Withdrawal:</td>
+                  <td>
+                    {{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}
+                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-caption">Status:</td>
+                  <td>{{ props.item.stakes.my.reinvest ? 'Staked' : 'Withdrawing' }}</td>
+                </tr>
+              </table>
+            </td>
+            <td class="myStakes__list__actions">
               <div>
                 <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
               </div>
@@ -116,9 +158,10 @@ import Addr from "@/components/Addr";
 import TableSearchToolbar from "@/components/TableSearchToolbar";
 import StakingDialog from "@/components/StakingDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
+import Stability from "@/components/Stability";
 
 export default {
-  components: {StakingDialog, WithdrawDialog, Addr, TableSearchToolbar},
+  components: {StakingDialog, WithdrawDialog, Addr, TableSearchToolbar, Stability},
   data() {
     return {
       config: global.config,
@@ -127,12 +170,21 @@ export default {
       items: [],
       loading: true,
       headers: [
-        {text: 'Address', value: 'address', align: 'start', sortable: false,},
-        {text: 'Total', value: 'stakes.my.total', align: 'center', sortable: true,},
-        {text: 'Reward', value: 'stakes.my.reward', align: 'center', sortable: true,},
-        {text: 'Withdraw', value: 'stakes.my.withdrawValue', align: 'center', sortable: true},
-        {text: 'Status', value: 'stakes.my.reinvest', align: 'center', sortable: true},
+        {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
+        {text: 'Stability', align: 'center', sortable: false, filterable: false,},
+        {text: 'Info', align: 'center', sortable: false, filterable: false,},
+        {value: 'name', align: ' d-none', sortable: false,},
+        {value: 'stakes.my.total', align: ' d-none', sortable: false, filterable: false,},
+        {value: 'stakes.my.reward', align: ' d-none', sortable: false, filterable: false,},
+        {value: 'stakes.my.withdrawValue', align: ' d-none', sortable: false, filterable: false,},
+        {value: 'stakes.my.reinvest', align: ' d-none', sortable: false, filterable: false,},
         {sortable: false},
+      ],
+      sort: null,
+      sortItems: [
+        {text: 'Total Stake', value: ['stakes.my.total', true]},
+        {text: 'Reward', value: ['stakes.my.reward', true]},
+        {text: 'Withdrawal', value: ['stakes.my.withdrawValue', true]},
       ],
       isExtensionAvailableWithMinimalVersion: true,
       isMainNet: true,
@@ -143,6 +195,9 @@ export default {
       activeDepoolId: null,
       overlay: false,
     }
+  },
+  created() {
+    this.sort = this.sortItems[0].value;
   },
   async mounted() {
     setTimeout(async function () {
@@ -211,11 +266,11 @@ export default {
         }
         const depool = this.items.find(o => o.id === depoolId);
         await utils.sendTransactionToDepool(
-          provider,
-          depool.address,
-          'cancelWithdrawal',
-          {},
-          utils.transactionAdditionalFee
+            provider,
+            depool.address,
+            'cancelWithdrawal',
+            {},
+            utils.transactionAdditionalFee
         );
         this.dialogWithdrawCanceled = true;
       } catch (e) {
@@ -238,11 +293,11 @@ export default {
         }
         const depool = this.items.find(o => o.id === depoolId);
         await utils.sendTransactionToDepool(
-          provider,
-          depool.address,
-          'ticktock',
-          {},
-          utils.transactionAdditionalFee
+            provider,
+            depool.address,
+            'ticktock',
+            {},
+            utils.transactionAdditionalFee
         );
         this.$snack.danger({text: 'Ticktock successfully sent.'})
       } catch (e) {
@@ -260,7 +315,25 @@ export default {
 
 <style lang="scss">
 .myStakes {
-  &__table {
+  &__list {
+    &__infoTable {
+      margin: 0 auto;
+      width: 100%;
+
+      td {
+        width: 50%;
+      }
+
+      td:first-child {
+        text-align: right;
+        padding-right: 3px;
+      }
+
+      td:last-child {
+        text-align: left;
+      }
+    }
+
     &__actions {
       text-align: center;
 

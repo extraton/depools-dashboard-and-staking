@@ -50,6 +50,7 @@
     >
       <template v-slot:top>
         <table-search-toolbar @search="find" @added="loadItems">
+          <!--      DUPLICATE @TODO      -->
           <v-select v-model="sort" :items="sortItems" label="Sort By" style="margin-left:10px" hide-details>
             <template v-slot:item="{item}">
               <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
@@ -127,11 +128,11 @@ export default {
       loading: false,
       headers: [
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
+        {text: 'Stability', align: 'center', sortable: false, filterable: false,},
+        {text: 'Info', align: 'center', sortable: false, filterable: false,},
         {value: 'name', align: ' d-none', sortable: false,},
-        {value: 'stakes.total', align: ' d-none', sortable: true,},
-        {text: 'Stability', align: 'center', sortable: false,},
-        {text: 'Info', align: 'center', sortable: false,},
-        {sortable: false},
+        {value: 'stakes.total', align: ' d-none', sortable: true, filterable: false,},
+        {sortable: false, filterable: false,},
       ],
       sort: null,
       sortItems: [
@@ -208,6 +209,11 @@ export default {
 
     &__infoTable {
       margin: 0 auto;
+      width: 100%;
+
+      td {
+        width: 50%;
+      }
 
       td:first-child {
         text-align: right;

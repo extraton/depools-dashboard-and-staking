@@ -5,7 +5,6 @@ import store from './store'
 import vuetify from './plugins/vuetify';
 import VueResource from 'vue-resource';
 import VueClipboards from "vue-clipboards";
-import Ewll from './../Main';
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 
@@ -28,7 +27,6 @@ let snack = {
 Vue.use(VueResource);
 Vue.use(VueClipboards);
 Vue.use(snack);
-Vue.use(Ewll);
 
 Vue.config.productionTip = false
 
