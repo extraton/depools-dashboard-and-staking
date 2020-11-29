@@ -45,9 +45,10 @@ class UpdateDepoolsListCommand extends AbstractCommand
 
     protected function do(InputInterface $input, OutputInterface $output)
     {
-        $net = $this->entityManager->getRepository(Net::class)->find($input->getArgument('netId'));
+        $netId = $input->getArgument('netId');
+        $net = $this->entityManager->getRepository(Net::class)->find($netId);
         if (null === $net) {
-            throw new \RuntimeException("Net '$net' not found");
+            throw new \RuntimeException("Net '$netId' not found");
         }
         $tonClient = $this->ton->getClient($net->getServer());
 

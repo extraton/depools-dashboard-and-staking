@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="depoolsList">
     <v-dialog v-model="dialogStaked" max-width="500">
       <v-card>
         <v-card-title>
@@ -41,26 +41,62 @@
       :headers="headers"
       :items="items"
       :mobile-breakpoint="100"
-      :loading="listing.loading"
-      :items-per-page="10000"
+      :loading="loading"
+      :items-per-page="50"
       :search="search"
-      :sort-by="['stakes.total']"
-      :sort-desc="[true]"
-      hide-default-footer
+      :sort-by="[sort[0]]"
+      :sort-desc="[sort[1]]"
+      class="depoolsList__list"
     >
       <template v-slot:top>
-        <table-search-toolbar @search="find" @added="loadItems"/>
+        <table-search-toolbar @search="find" @added="loadItems">
+          <v-select v-model="sort" :items="sortItems" label="Sort By" style="margin-left:10px" hide-details>
+            <template v-slot:item="{item}">
+              <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
+              <v-icon v-else left>mdi-arrow-up</v-icon>
+              {{ item.text }}
+            </template>
+            <template v-slot:selection="{item}">
+              <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
+              <v-icon v-else left>mdi-arrow-up</v-icon>
+              {{ item.text }}
+            </template>
+          </v-select>
+        </table-search-toolbar>
       </template>
       <template slot="item" slot-scope="props">
         <tr>
           <td>
             <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
           </td>
-          <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
-          <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
-          <td style="text-align:center">
-            <span>{{ utils.convertFromNano(props.item.stakes.total, 0) }}</span>
-            <v-icon color="primary" right small>mdi-diamond-stone</v-icon>
+          <td style="text-align:center;padding:0">
+            <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
+          </td>
+          <td>
+            <table class="depoolsList__list__infoTable">
+              <tr>
+                <td class="text-caption">Total Assets:</td>
+                <td>
+                  {{ utils.convertFromNano(props.item.stakes.total, 0) }}
+                  <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-caption">Participants:</td>
+                <td>{{ props.item.stakes.participantsNum }}</td>
+              </tr>
+              <tr>
+                <td class="text-caption">Assurance:</td>
+                <td>
+                  {{ utils.convertFromNano(props.item.params.validatorAssurance) }}
+                  <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-caption">Fee:</td>
+                <td>{{ props.item.params.validatorRewardFraction }}%</td>
+              </tr>
+            </table>
           </td>
           <td>
             <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
@@ -78,23 +114,35 @@ import utils from "@/utils";
 import Addr from "@/components/Addr";
 import StakingDialog from "@/components/StakingDialog";
 import TableSearchToolbar from "@/components/TableSearchToolbar";
+import Stability from "@/components/Stability";
 
 export default {
-  components: {TableSearchToolbar, StakingDialog, Addr},
+  components: {Stability, TableSearchToolbar, StakingDialog, Addr},
   data() {
     return {
       config: global.config,
       utils,
       search: '',
       items: [],
-      listing: null,
+      loading: false,
       headers: [
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
-        {text: 'Name', value: 'name', align: ' d-none', sortable: false,},
-        {text: 'Investor Fee', value: 'params.validatorRewardFraction', align: 'center', sortable: true,},
-        {text: 'Participants', value: 'stakes.participantsNum', align: 'center', sortable: true,},
-        {text: 'Total Assets', value: 'stakes.total', align: 'center', sortable: true},
+        {value: 'name', align: ' d-none', sortable: false,},
+        {value: 'stakes.total', align: ' d-none', sortable: true,},
+        {text: 'Stability', align: 'center', sortable: false,},
+        {text: 'Info', align: 'center', sortable: false,},
         {sortable: false},
+      ],
+      sort: null,
+      sortItems: [
+        {text: 'Total Assets', value: ['stakes.total', true]},
+        {text: 'Total Assets', value: ['stakes.total', false]},
+        {text: 'Participants', value: ['stakes.participantsNum', true]},
+        {text: 'Participants', value: ['stakes.participantsNum', false]},
+        {text: 'Fee', value: ['params.validatorRewardFraction', true]},
+        {text: 'Fee', value: ['params.validatorRewardFraction', false]},
+        {text: 'Assurance', value: ['params.validatorAssurance', true]},
+        {text: 'Assurance', value: ['params.validatorAssurance', false]},
       ],
       dialogInstall: false,
       dialogStaked: false,
@@ -103,13 +151,7 @@ export default {
     }
   },
   created() {
-    this.listing = this.$ewll.initListingForm(this, {
-      url: '/crud/depool',
-      sort: {id: 'desc'},
-      success: function (response) {
-        this.items = response.body.items;
-      }.bind(this),
-    });
+    this.sort = this.sortItems[0].value;
   },
   mounted() {
     this.init()
@@ -126,8 +168,16 @@ export default {
     init() {
       this.loadItems();
     },
-    loadItems() {
-      this.listing.submit();
+    async loadItems() {
+      this.loading = true;
+      try {
+        const response = await this.$http.get('/api/depools');
+        this.items = response.body;
+      } catch (response) {
+        this.$snack.danger({text: 'Error ' + response.status});
+      } finally {
+        this.loading = false;
+      }
     },
     find(query) {
       this.search = query;
@@ -150,4 +200,24 @@ export default {
 </script>
 
 <style lang="scss">
+.depoolsList {
+  &__list {
+    .v-data-footer__select {
+      visibility: hidden;
+    }
+
+    &__infoTable {
+      margin: 0 auto;
+
+      td:first-child {
+        text-align: right;
+        padding-right: 3px;
+      }
+
+      td:last-child {
+        text-align: left;
+      }
+    }
+  }
+}
 </style>

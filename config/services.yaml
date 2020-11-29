@@ -1,6 +1,5 @@
 imports:
   - { resource: services/command.yaml}
-  - { resource: services/crud-unit.yaml}
 
 parameters:
   env: '%env(APP_ENV)%'
@@ -8,6 +7,7 @@ parameters:
   domain: '%env(DOMAIN)%'
   version: '%env(APP_VERSION)%'
   namesContractAddress: '%env(NAMES_CONTRACT_ADDRESS)%'
+  cacheDir: '%env(CACHE_DIR)%'
 
 services:
   _defaults:
@@ -25,5 +25,6 @@ services:
     arguments:
       - '%siteName%'
       - '%domain%'
+      - '%cacheDir%'
 
   App\Ton:

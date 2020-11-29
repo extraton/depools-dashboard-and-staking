@@ -13,5 +13,4 @@ return [
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Ewll\LogExtraDataBundle\EwllLogExtraDataBundle::class => ['all' => true],
-    Ewll\CrudBundle\EwllCrudBundle::class => ['all' => true],
 ];

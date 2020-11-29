@@ -11,7 +11,6 @@
         </p>
         <v-text-field v-model="wallet" label="Multisig address" outlined/>
         <v-text-field v-model="name" maxlength="16" label="Desired Name" outlined/>
-        <v-text-field v-model="pathToKeys" label="Path to keys" outlined/>
         <div class="setName__code">
           <code>wget
             https://raw.githubusercontent.com/tonlabs/ton-labs-contracts/master/solidity/safemultisig/SafeMultisigWallet.abi.json</code>
@@ -20,7 +19,7 @@
             '{"dest":"0:bd38e2c38a4177243f3a47c7248ea1c689798b83d77265e6fbd12f954a3ebe05","value":100000000,"bounce":true,"allBalance":false,"payload":"{{
               payload
             }}"}'
-            --abi "./SafeMultisigWallet.abi.json" --sign "{{ pathToKeys }}"
+            --abi "./SafeMultisigWallet.abi.json" --sign ""
           </code>
         </div>
     </v-card-text>
@@ -37,7 +36,6 @@ export default {
   data: () => ({
     wallet: '',
     name: '',
-    pathToKeys: '',
     payload: '',
   }),
   watch: {

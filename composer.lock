@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "06eb18c2e7de61e94c6700233ff96623",
+    "content-hash": "e54965e496df369446272dfc351316d2",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1394,47 +1394,6 @@
                 "validator"
             ],
             "time": "2020-10-31T20:37:35+00:00"
-        },
-        {
-            "name": "ewll/crud-bundle",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ewll/crud-bundle.git",
-                "reference": "b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ewll/crud-bundle/zipball/b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b",
-                "reference": "b2bd273f3ba23a4d6cac39bbbad22ba63e90a05b",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": "^7.3",
-                "symfony/form": "^5",
-                "symfony/framework-bundle": "^5",
-                "symfony/translation": "^5",
-                "symfony/validator": "^5"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "Ewll\\CrudBundle\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "proprietary"
-            ],
-            "authors": [
-                {
-                    "name": "qwertys318",
-                    "email": "343604@gmail.com"
-                }
-            ],
-            "description": "Crud Bundle",
-            "time": "2020-11-19T11:13:20+00:00"
         },
         {
             "name": "ewll/log-extra-data-bundle",

@@ -1,6 +1,7 @@
-ewll_crud:
-  resource: '@EwllCrudBundle/Resources/config/routing.yaml'
-  prefix: '/crud'
+api.depools:
+  path: /api/depools
+  controller: App\Controller\IndexController::depools
+  methods: [GET]
 
 index:
   path: /{route}

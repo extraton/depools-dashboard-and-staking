@@ -81,9 +81,6 @@
     "egulias/email-validator": {
         "version": "2.1.23"
     },
-    "ewll/crud-bundle": {
-        "version": "2.0"
-    },
     "ewll/log-extra-data-bundle": {
         "version": "1.0.1"
     },

@@ -24,7 +24,7 @@ class Depool
      * @ORM\GeneratedValue
      * @ORM\Column(type="bigint")
      */
-    public $id;
+    private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Net", inversedBy="depools")
@@ -35,33 +35,39 @@ class Depool
     /**
      * @ORM\Column(type="string", length=16, nullable=true)
      */
-    public $name;
+    private $name;
 
     /**
      * @ORM\Column(type="string", length=67)
      */
-    public $address;
+    private $address;
 
     /**
      * @ORM\Column(type="json")
      */
-    public $info;
+    private $info;
 
     /**
      * @ORM\Column(type="json")
      */
-    public $stakes;
+    private $stakes;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    public $createdTs;
+    private $createdTs;
 
     /**
      * @ORM\OneToMany(targetEntity="DepoolRound", mappedBy="depool")
      * @ORM\OrderBy({"id" = "ASC"})
      */
-    public $rounds;
+    private $rounds;
+
+    /**
+     * @ORM\OneToMany(targetEntity="DepoolEvent", mappedBy="depool")
+     * @ORM\OrderBy({"id" = "ASC"})
+     */
+    private $events;
 
     public function __construct(Net $net, string $address, array $info, array $stakes)
     {
@@ -124,5 +130,56 @@ class Depool
     public function getNet(): Net
     {
         return $this->net;
+    }
+
+    public function compileStakes()
+    {
+        $stakes = $this->getStakes();
+        $total = '0';
+        $items = [];
+        foreach ($stakes as $stake) {
+            $total = bcadd($total, hexdec($stake['info']['total']));
+            $items[] = [
+                'address' => $stake['address'],
+                'info' => [
+                    'total' => hexdec($stake['info']['total']),
+                    'withdrawValue' => hexdec($stake['info']['withdrawValue']),
+                    'reinvest' => $stake['info']['reinvest'],
+                    'reward' => hexdec($stake['info']['reward']),
+                ],
+            ];
+        }
+
+        return [
+            'participantsNum' => count($stakes),
+            'total' => $total,
+            'items' => $items
+        ];
+    }
+
+    public function compileParams()
+    {
+        return [
+            'minStake' => hexdec($this->getInfo()['minStake']),
+            'validatorAssurance' => hexdec($this->getInfo()['validatorAssurance']),
+            'participantRewardFraction' => hexdec($this->getInfo()['participantRewardFraction']),
+            'validatorRewardFraction' => hexdec($this->getInfo()['validatorRewardFraction']),
+            'balanceThreshold' => hexdec($this->getInfo()['balanceThreshold']),
+            'validatorWallet' => $this->getInfo()['validatorWallet'],
+        ];
+    }
+
+    public function compileLink()
+    {
+        return sprintf(
+            "https://%s/accounts?section=details&id=%s",
+            $this->getNet()->getExplorer(),
+            $this->getAddress()
+        );
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

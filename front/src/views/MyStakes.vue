@@ -67,7 +67,7 @@
         :sort-by="['stakes.total']"
         :sort-desc="[true]"
         :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
-        :loading="listing.loading"
+        :loading="loading"
         class="myStakes__table"
         hide-default-footer
       >
@@ -125,7 +125,7 @@ export default {
       utils,
       search: '',
       items: [],
-      listing: null,
+      loading: true,
       headers: [
         {text: 'Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Total', value: 'stakes.my.total', align: 'center', sortable: true,},
@@ -143,26 +143,6 @@ export default {
       activeDepoolId: null,
       overlay: false,
     }
-  },
-  created() {
-    this.listing = this.$ewll.initListingForm(this, {
-      url: '/crud/depool',
-      sort: {id: 'desc'},
-      loading: true,
-      success: function (response) {
-        this.items = response.body.items.filter(function (depool) {
-          for (const stake of depool.stakes.items) {
-            if (stake.address === this.address) {
-              let item = depool;
-              item.stakes.my = stake.info;
-              this.items.push(item);
-              return true;
-            }
-          }
-          return false;
-        }.bind(this));
-      }.bind(this),
-    });
   },
   async mounted() {
     setTimeout(async function () {
@@ -188,8 +168,26 @@ export default {
     init() {
       this.loadItems();
     },
-    loadItems() {
-      this.listing.submit();
+    async loadItems() {
+      this.loading = true;
+      try {
+        const response = await this.$http.get('/api/depools');
+        this.items = response.body.filter(function (depool) {
+          for (const stake of depool.stakes.items) {
+            if (stake.address === this.address) {
+              let item = depool;
+              item.stakes.my = stake.info;
+              this.items.push(item);
+              return true;
+            }
+          }
+          return false;
+        }.bind(this));
+      } catch (response) {
+        this.$snack.danger({text: 'Error ' + response.status});
+      } finally {
+        this.loading = false;
+      }
     },
     find(query) {
       this.search = query;

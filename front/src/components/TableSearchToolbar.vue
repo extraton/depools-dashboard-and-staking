@@ -1,5 +1,5 @@
 <template>
-    <v-toolbar flat dense>
+    <v-toolbar flat>
         <v-text-field v-model="searchValue"
                       @input="search"
                       v-on:keyup.enter="search"
@@ -9,6 +9,7 @@
                       style="width:100%"
                       single-line
         />
+      <slot/>
     </v-toolbar>
 </template>
 

@@ -13,6 +13,15 @@ services:
     tags:
       - { name: 'console.command', command: 'depool:list:update' }
 
+  App\Command\UpdateDepoolEventsCommand:
+    parent: App\Command\AbstractCommand
+    arguments:
+      - '@logger'
+      - '@doctrine.orm.entity_manager'
+      - '@App\Ton'
+    tags:
+      - { name: 'console.command', command: 'depool:events:update' }
+
   App\Command\UpdateDepoolNamesCommand:
     parent: App\Command\AbstractCommand
     arguments:
@@ -22,3 +31,12 @@ services:
       - '%namesContractAddress%'
     tags:
       - { name: 'console.command', command: 'depool:names:update' }
+
+  App\Command\CacheDepoolQueryCommand:
+    parent: App\Command\AbstractCommand
+    arguments:
+      - '@logger'
+      - '@doctrine.orm.entity_manager'
+      - '%cacheDir%'
+    tags:
+      - { name: 'console.command', command: 'depool:query:cache' }

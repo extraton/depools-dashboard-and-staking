@@ -11,6 +11,33 @@ spec:
     selector:
         app: depool-nginx
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: extraton-depools-cache-pv-volume
+    labels:
+        type: local
+spec:
+    storageClassName: manual
+    capacity:
+        storage: 100Mi
+    accessModes:
+        - ReadWriteMany
+    hostPath:
+        path: "/mnt/extraton-depools-cache-pv-volume"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: extraton-depools-cache-pv-claim
+spec:
+    storageClassName: manual
+    accessModes:
+        - ReadWriteMany
+    resources:
+        requests:
+            storage: 100Mi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,10 +54,13 @@ spec:
         spec:
             containers:
                 -   name: depool-nginx
-                    image: extraton/depool-dashboard:0.1.11
+                    image: extraton/depool-dashboard:0.8
                     ports: [{containerPort: 80}]
                     command: ['/bin/bash']
                     args: ['-c', "php-fpm --nodaemonize & nginx -g 'daemon off;'"]
+                    volumeMounts:
+                        - name: extraton-depools-cache-persistent-storage
+                          mountPath: /var/cache
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,8 +76,27 @@ spec:
             labels:
                 app: depool-cron
         spec:
+            initContainers:
+                - name: volume-permission
+                  image: alpine
+                  securityContext:
+                      runAsUser: 0
+                  volumeMounts:
+                      - name: extraton-depools-cache-persistent-storage
+                        mountPath: /vol1
+                  command:
+                      - sh
+                      - -c
+                      - chown -R 82:82 /vol1
             containers:
                 -   name: depool-cron
-                    image: extraton/depool-dashboard:0.1.11
+                    image: extraton/depool-dashboard:0.8
                     command: ['/bin/bash']
                     args: ['-c', "crontab /var/www/html/config/cron && crond -n"]
+                    volumeMounts:
+                        -   name: extraton-depools-cache-persistent-storage
+                            mountPath: /var/cache
+            volumes:
+                - name: extraton-depools-cache-persistent-storage
+                  persistentVolumeClaim:
+                      claimName: extraton-depools-cache-pv-claim
