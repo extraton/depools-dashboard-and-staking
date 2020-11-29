@@ -4535,10 +4535,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-freeton@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/freeton/-/freeton-0.3.2.tgz#fdc472d2b0c9c10a8f95b7d87ff08bab876fe252"
-  integrity sha512-EU+IzvPpEbkd+q+JSsS6O2z9xs6uj9C/XnGMyRTVTwFuPTmwgLMuUiJXBNIyuzbptOkAJaq3pMMQjHOVcV2tgw==
+freeton@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/freeton/-/freeton-0.4.1.tgz#caf78a73ff2cd0569af9d7e12420b881981ccfa3"
+  integrity sha512-9fn55jjHLYaJAon2kQ/2KPDwtUdoyj+sURiCymW/5v2OuhyPgnV6/r+JGTnyNANJpON7esIJ86VrAtcmfZyGxw==
 
 fresh@0.5.2:
   version "0.5.2"

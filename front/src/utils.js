@@ -39,7 +39,8 @@ export default {
     const message = await this.generateMessage(depoolAbi, functionName, params);
     const signer = await provider.getSigner();
     const wallet = signer.getWallet();
-    await wallet.transfer(address, amount, true, message.bodyBase64);
+    const contractMessageProcessing = await wallet.transfer(address, amount, true, message.bodyBase64);
+    await contractMessageProcessing.wait();
   },
   async isExtensionAvailableWithMinimalVersion() {
     return new Promise(resolve => {
@@ -49,7 +50,7 @@ export default {
       const provider = new freeton.providers.ExtensionProvider(window.freeton);
       provider.getVersion().then(data => {
         const currentVersion = data.version || '0.0.0';
-        resolve(semver.satisfies(currentVersion, '=0.4.0'));
+        resolve(semver.satisfies(currentVersion, '>=0.4.1'));
       }).catch(() => {
         resolve(false);
       });

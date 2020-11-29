@@ -41,7 +41,7 @@
         Install extraTON extension
       </v-card-title>
       <v-card-text>
-        <p>In order to stake you need to install extraTON extension with version 0.4.0.</p>
+        <p>In order to stake you need to install extraTON extension with minimal version 0.4.1.</p>
         <p>Go to <a href="https://chrome.google.com/webstore/detail/extraton/hhimbkmlnofjdajamcojlcmgialocllm"
                     target="_blank">Chrome Store</a>.</p>
       </v-card-text>
