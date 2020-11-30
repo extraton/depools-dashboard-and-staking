@@ -16,7 +16,7 @@
               <tr>
                 <td>Depool address</td>
                 <td>
-                  <addr :address="depool.address" :link="depool.link"/>
+                  <addr :address="depool.address" :link="depool.link" buttons/>
                 </td>
               </tr>
               <tr>

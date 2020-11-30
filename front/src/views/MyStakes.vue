@@ -70,7 +70,18 @@
           :sort-by="[sort[0]]"
           :sort-desc="[sort[1]]"
           hide-default-footer
+          hide-default-header
       >
+        <template v-slot:header="{ props }">
+          <thead class="v-data-table-header">
+          <tr>
+            <th v-for="(item,key) in props.headers" :key="`th-${key}`"
+                :class="[`text-${item.align}`, `myStakes__list__header__${item.value}`]">
+              <template v-if="item.text">{{ item.text }}</template>
+            </th>
+          </tr>
+          </thead>
+        </template>
         <template v-slot:top>
           <table-search-toolbar @search="find" @added="loadItems">
             <!--      DUPLICATE @TODO      -->
@@ -90,7 +101,12 @@
         </template>
         <template slot="item" slot-scope="props">
           <tr>
-            <td>
+            <td style="width:120px">
+              <addr-copy-button :address="props.item.address"/>
+              <addr-explorer-button :link="props.item.link"/>
+              <addr-link-button :address="props.item.address"/>
+            </td>
+            <td style="padding-left:0">
               <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
             </td>
             <td style="text-align:center;padding:0">
@@ -156,9 +172,21 @@ import TableSearchToolbar from "@/components/TableSearchToolbar";
 import StakingDialog from "@/components/StakingDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import Stability from "@/components/Stability";
+import AddrCopyButton from "@/components/AddrCopyButton";
+import AddrExplorerButton from "@/components/AddrExplorerButton";
+import AddrLinkButton from "@/components/AddrLinkButton";
 
 export default {
-  components: {StakingDialog, WithdrawDialog, Addr, TableSearchToolbar, Stability},
+  components: {
+    StakingDialog,
+    WithdrawDialog,
+    Addr,
+    TableSearchToolbar,
+    Stability,
+    AddrCopyButton,
+    AddrExplorerButton,
+    AddrLinkButton
+  },
   data() {
     return {
       config: global.config,
@@ -167,6 +195,7 @@ export default {
       items: [],
       loading: true,
       headers: [
+        {sortable: false, filterable: false,},
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Stability', align: 'center', sortable: false, filterable: false,},
         {text: 'Info', align: 'center', sortable: false, filterable: false,},
@@ -313,6 +342,12 @@ export default {
 <style lang="scss">
 .myStakes {
   &__list {
+    &__header {
+      &__address {
+        padding-left: 0 !important;
+      }
+    }
+
     &__infoTable {
       margin: 0 auto;
       width: 100%;

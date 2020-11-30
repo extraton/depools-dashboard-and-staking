@@ -1,56 +1,47 @@
 <template>
   <div class="addr">
-    <span v-if="name" class="addr__name text-overline" v-html="protectedHtmlName"/>
-    <span v-else class="text-overline">
+    <div v-if="buttons">
+      <addr-copy-button :address="address"/>
+    </div>
+
+    <div>
+      <span v-if="name" class="addr__name text-subtitle-1" v-html="protectedHtmlName"/>
+      <span v-else class="text-overline">
       {{ address.substr(0, 8) }}...{{ address.substr(-6) }}
     </span>
+    </div>
 
-    <v-tooltip bottom>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs"
-               v-on="on"
-               v-clipboard="address"
-               @click="$snack.success({text: 'Copied'})"
-               icon small
-        >
-          <v-icon small>mdi-content-copy</v-icon>
-        </v-btn>
-      </template>
-      <span>Copy address</span>
-    </v-tooltip>
-
-    <v-tooltip v-if="link" bottom>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" :href="link" target="_blank" icon small>
-          <v-icon small>mdi-open-in-new</v-icon>
-        </v-btn>
-      </template>
-      <span>Open in explorer</span>
-    </v-tooltip>
+    <div v-if="buttons">
+      <addr-explorer-button :link="link"/>
+    </div>
   </div>
 </template>
 
 <script>
 import xss from "anchorme";
 import anchorme from "anchorme";
+import AddrCopyButton from "@/components/AddrCopyButton";
+import AddrExplorerButton from "@/components/AddrExplorerButton";
 
 export default {
+  components: {AddrExplorerButton, AddrCopyButton},
   props: {
     address: String,
     link: String,
     name: {type: String, default: null},
+    buttons: {type: Boolean, default: false}
   },
   computed: {
     protectedHtmlName() {
       return xss(
-        anchorme({
-          input: this.name,
-          options: {
-            attributes: {
-              target: '_blank'
-            },
-          }
-        })
+          anchorme({
+            input: this.name,
+            options: {
+              attributes: {
+                target: '_blank'
+              },
+            }
+          })
       );
     }
   }
@@ -59,7 +50,10 @@ export default {
 
 <style lang="scss">
 .addr {
-  &__name a{
+  display: flex;
+  align-items: center;
+
+  &__name a {
     text-decoration: none;
   }
 }
