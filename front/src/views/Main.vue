@@ -38,14 +38,16 @@
     <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="stakingDepool"/>
 
     <v-data-table
+        @update:sort-by="updateSortBy"
+        @update:sort-desc="updateSortDesc"
         :headers="headers"
         :items="items"
         :mobile-breakpoint="100"
         :loading="loading"
         :items-per-page="50"
         :search="search"
-        :sort-by="['stakes.total']"
-        :sort-desc="[true]"
+        :sort-by="sortBy"
+        :sort-desc="sortDesc"
         class="depoolsList__list"
     >
       <template v-slot:top>
@@ -99,6 +101,8 @@ export default {
       config: global.config,
       utils,
       search: '',
+      sortBy: ['isNameSet', 'stakes.total'],
+      sortDesc: [true, true],
       items: [],
       loading: false,
       headers: [
@@ -160,6 +164,17 @@ export default {
         this.isStakingDialogOpening = false;
       }
     },
+    updateSortBy(value) {
+      if (value.length === 1) {//dirty hack
+        this.sortBy = ['isNameSet', value[0]];
+      }
+      console.log(this.sortBy);
+    },
+    updateSortDesc(value) {
+      if (value.length === 1) {//dirty hack
+        this.sortDesc = [true, value[0]];
+      }
+    }
   }
 }
 </script>
@@ -169,9 +184,10 @@ export default {
   &__list {
     .v-data-table-header {
       th:nth-child(2) {
-        padding-left: 0!important;
+        padding-left: 0 !important;
       }
     }
+
     .v-data-footer__select {
       visibility: hidden;
     }

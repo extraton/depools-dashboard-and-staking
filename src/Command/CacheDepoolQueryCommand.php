@@ -39,6 +39,7 @@ class CacheDepoolQueryCommand extends AbstractCommand
             $data[] = [
                 'id' => $depool->getId(),
                 'name' => $depool->getName(),
+                'isNameSet' => null !== $depool->getName(),
                 'address' => $depool->getAddress(),
                 'link' => $depool->compileLink(),
                 'dateCreate' => $depool->getCreatedTs()->format('Y-m-d H:i'),
