@@ -44,37 +44,12 @@
         :loading="loading"
         :items-per-page="50"
         :search="search"
-        :sort-by="[sort[0]]"
-        :sort-desc="[sort[1]]"
+        :sort-by="['stakes.total']"
+        :sort-desc="[true]"
         class="depoolsList__list"
-        hide-default-header
     >
-      <template v-slot:header="{ props }">
-        <thead class="v-data-table-header">
-        <tr>
-          <th v-for="(item,key) in props.headers" :key="`th-${key}`"
-              :class="[`text-${item.align}`, `depoolsList__list__header__${item.value}`]">
-            <template v-if="item.text">{{ item.text }}</template>
-          </th>
-        </tr>
-        </thead>
-      </template>
       <template v-slot:top>
-        <table-search-toolbar @search="find" @added="loadItems">
-          <!--      DUPLICATE @TODO      -->
-          <v-select v-model="sort" :items="sortItems" label="Sort By" style="margin-left:10px" hide-details>
-            <template v-slot:item="{item}">
-              <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
-              <v-icon v-else left>mdi-arrow-up</v-icon>
-              {{ item.text }}
-            </template>
-            <template v-slot:selection="{item}">
-              <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
-              <v-icon v-else left>mdi-arrow-up</v-icon>
-              {{ item.text }}
-            </template>
-          </v-select>
-        </table-search-toolbar>
+        <table-search-toolbar @search="find" @added="loadItems"/>
       </template>
       <template slot="item" slot-scope="props">
         <tr>
@@ -89,32 +64,13 @@
           <td style="text-align:center;padding:0">
             <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
           </td>
-          <td>
-            <table class="depoolsList__list__infoTable">
-              <tr>
-                <td class="text-caption">Total Assets:</td>
-                <td>
-                  {{ utils.convertFromNano(props.item.stakes.total, 0) }}
-                  <v-icon color="primary" small>mdi-diamond-stone</v-icon>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-caption">Participants:</td>
-                <td>{{ props.item.stakes.participantsNum }}</td>
-              </tr>
-              <tr>
-                <td class="text-caption">Assurance:</td>
-                <td>
-                  {{ utils.convertFromNano(props.item.params.validatorAssurance) }}
-                  <v-icon color="primary" small>mdi-diamond-stone</v-icon>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-caption">Fee:</td>
-                <td>{{ props.item.params.validatorRewardFraction }}%</td>
-              </tr>
-            </table>
+          <td style="text-align:center">
+            {{ utils.convertFromNano(props.item.stakes.total, 0) }}
+            <v-icon color="primary" small>mdi-diamond-stone</v-icon>
           </td>
+          <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
+          <td style="text-align:center">{{ utils.convertFromNano(props.item.params.validatorAssurance) }}</td>
+          <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
           <td>
             <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
               stake now
@@ -149,30 +105,19 @@ export default {
         {sortable: false, filterable: false,},
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Stability', align: 'center', sortable: false, filterable: false,},
-        {text: 'Info', align: 'center', sortable: false, filterable: false,},
+        {text: 'Assets', value: 'stakes.total', align: 'center', sortable: true, filterable: false,},
+        {text: 'Members', value: 'stakes.participantsNum', align: 'center', sortable: true, filterable: false,},
+        {text: 'Assurance', value: 'params.validatorAssurance', align: 'center', sortable: true, filterable: false,},
+        {text: 'Fee', value: 'params.validatorRewardFraction', align: 'center', sortable: true, filterable: false,},
         {value: 'name', align: ' d-none', sortable: false,},
         {value: 'stakes.total', align: ' d-none', sortable: true, filterable: false,},
         {sortable: false, filterable: false,},
-      ],
-      sort: null,
-      sortItems: [
-        {text: 'Total Assets', value: ['stakes.total', true]},
-        {text: 'Total Assets', value: ['stakes.total', false]},
-        {text: 'Participants', value: ['stakes.participantsNum', true]},
-        {text: 'Participants', value: ['stakes.participantsNum', false]},
-        {text: 'Fee', value: ['params.validatorRewardFraction', true]},
-        {text: 'Fee', value: ['params.validatorRewardFraction', false]},
-        {text: 'Assurance', value: ['params.validatorAssurance', true]},
-        {text: 'Assurance', value: ['params.validatorAssurance', false]},
       ],
       dialogInstall: false,
       dialogStaked: false,
       stakingDepoolId: null,
       isStakingDialogOpening: false,
     }
-  },
-  created() {
-    this.sort = this.sortItems[0].value;
   },
   mounted() {
     this.init();
@@ -223,12 +168,11 @@ export default {
 <style lang="scss">
 .depoolsList {
   &__list {
-    &__header {
-      &__address {
-        padding-left: 0 !important;
+    .v-data-table-header {
+      th:nth-child(2) {
+        padding-left: 0!important;
       }
     }
-
     .v-data-footer__select {
       visibility: hidden;
     }
