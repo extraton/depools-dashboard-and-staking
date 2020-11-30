@@ -38,15 +38,15 @@
     <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="stakingDepool"/>
 
     <v-data-table
-      :headers="headers"
-      :items="items"
-      :mobile-breakpoint="100"
-      :loading="loading"
-      :items-per-page="50"
-      :search="search"
-      :sort-by="[sort[0]]"
-      :sort-desc="[sort[1]]"
-      class="depoolsList__list"
+        :headers="headers"
+        :items="items"
+        :mobile-breakpoint="100"
+        :loading="loading"
+        :items-per-page="50"
+        :search="search"
+        :sort-by="[sort[0]]"
+        :sort-desc="[sort[1]]"
+        class="depoolsList__list"
     >
       <template v-slot:top>
         <table-search-toolbar @search="find" @added="loadItems">
@@ -210,9 +210,13 @@ export default {
     &__infoTable {
       margin: 0 auto;
       width: 100%;
-
+      min-width: 190px;
       td {
         width: 50%;
+      }
+
+      .text-caption {
+        color: hsla(0, 0%, 100%, .7)
       }
 
       td:first-child {

@@ -102,21 +102,18 @@
                   <td class="text-caption">Total Stake:</td>
                   <td>
                     {{ utils.convertFromNano(props.item.stakes.my.total) }}
-                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
                   </td>
                 </tr>
                 <tr>
                   <td class="text-caption">Reward:</td>
                   <td>
                     {{ utils.convertFromNano(props.item.stakes.my.reward) }}
-                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="props.item.stakes.my.withdrawValue > 0">
                   <td class="text-caption">Withdrawal:</td>
                   <td>
                     {{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}
-                    <v-icon color="primary" small>mdi-diamond-stone</v-icon>
                   </td>
                 </tr>
                 <tr>
@@ -319,9 +316,14 @@ export default {
     &__infoTable {
       margin: 0 auto;
       width: 100%;
+      min-width: 250px;
 
       td {
         width: 50%;
+      }
+
+      .text-caption {
+        color: hsla(0, 0%, 100%, .7)
       }
 
       td:first-child {

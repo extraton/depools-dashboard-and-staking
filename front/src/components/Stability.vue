@@ -3,6 +3,7 @@
     <v-sparkline
       :value="hackedValues"
       :gradient="['#2196f3', '#2196f3', '#f72047']"
+      height="90"
       smooth auto-draw
     />
   </div>
@@ -32,5 +33,7 @@ export default {
 
 <style lang="scss">
 .stability {
+  width: 130px;
+  margin: 0 auto;
 }
 </style>
