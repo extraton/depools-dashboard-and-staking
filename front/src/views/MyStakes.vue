@@ -67,37 +67,12 @@
           :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
           :loading="loading"
           class="myStakes__list"
-          :sort-by="[sort[0]]"
-          :sort-desc="[sort[1]]"
+          :sort-by="['stakes.my.total']"
+          :sort-desc="[true]"
           hide-default-footer
-          hide-default-header
       >
-        <template v-slot:header="{ props }">
-          <thead class="v-data-table-header">
-          <tr>
-            <th v-for="(item,key) in props.headers" :key="`th-${key}`"
-                :class="[`text-${item.align}`, `myStakes__list__header__${item.value}`]">
-              <template v-if="item.text">{{ item.text }}</template>
-            </th>
-          </tr>
-          </thead>
-        </template>
         <template v-slot:top>
-          <table-search-toolbar @search="find" @added="loadItems">
-            <!--      DUPLICATE @TODO      -->
-            <v-select v-model="sort" :items="sortItems" label="Sort By" style="margin-left:10px" hide-details>
-              <template v-slot:item="{item}">
-                <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
-                <v-icon v-else left>mdi-arrow-up</v-icon>
-                {{ item.text }}
-              </template>
-              <template v-slot:selection="{item}">
-                <v-icon v-if="item.value[1]" left>mdi-arrow-down</v-icon>
-                <v-icon v-else left>mdi-arrow-up</v-icon>
-                {{ item.text }}
-              </template>
-            </v-select>
-          </table-search-toolbar>
+          <table-search-toolbar @search="find" @added="loadItems"/>
         </template>
         <template slot="item" slot-scope="props">
           <tr>
@@ -112,32 +87,10 @@
             <td style="text-align:center;padding:0">
               <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
             </td>
-            <td>
-              <table class="myStakes__list__infoTable">
-                <tr>
-                  <td class="text-caption">Total Stake:</td>
-                  <td>
-                    {{ utils.convertFromNano(props.item.stakes.my.total) }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-caption">Reward:</td>
-                  <td>
-                    {{ utils.convertFromNano(props.item.stakes.my.reward) }}
-                  </td>
-                </tr>
-                <tr v-if="props.item.stakes.my.withdrawValue > 0">
-                  <td class="text-caption">Withdrawal:</td>
-                  <td>
-                    {{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-caption">Status:</td>
-                  <td>{{ props.item.stakes.my.reinvest ? 'Staked' : 'Withdrawing' }}</td>
-                </tr>
-              </table>
-            </td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.total, 3) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.reward, 3) }}</td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
+            <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'Staked' : 'Withdrawing' }}</td>
             <td class="myStakes__list__actions">
               <div>
                 <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
@@ -198,19 +151,12 @@ export default {
         {sortable: false, filterable: false,},
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Stability', align: 'center', sortable: false, filterable: false,},
-        {text: 'Info', align: 'center', sortable: false, filterable: false,},
+        {text: 'Total', value: 'stakes.my.total', align: 'center', sortable: true, filterable: false,},
+        {text: 'Reward', value: 'stakes.my.reward', align: 'center', sortable: true, filterable: false,},
+        {text: 'Withdraw', value: 'stakes.my.withdrawValue', align: 'center', sortable: true, filterable: false,},
+        {text: 'Status', align: 'center', sortable: false, filterable: false,},
         {value: 'name', align: ' d-none', sortable: false,},
-        {value: 'stakes.my.total', align: ' d-none', sortable: false, filterable: false,},
-        {value: 'stakes.my.reward', align: ' d-none', sortable: false, filterable: false,},
-        {value: 'stakes.my.withdrawValue', align: ' d-none', sortable: false, filterable: false,},
-        {value: 'stakes.my.reinvest', align: ' d-none', sortable: false, filterable: false,},
         {sortable: false},
-      ],
-      sort: null,
-      sortItems: [
-        {text: 'Total Stake', value: ['stakes.my.total', true]},
-        {text: 'Reward', value: ['stakes.my.reward', true]},
-        {text: 'Withdrawal', value: ['stakes.my.withdrawValue', true]},
       ],
       isExtensionAvailableWithMinimalVersion: true,
       isMainNet: true,
@@ -221,9 +167,6 @@ export default {
       activeDepoolId: null,
       overlay: false,
     }
-  },
-  created() {
-    this.sort = this.sortItems[0].value;
   },
   async mounted() {
     setTimeout(async function () {
@@ -342,9 +285,9 @@ export default {
 <style lang="scss">
 .myStakes {
   &__list {
-    &__header {
-      &__address {
-        padding-left: 0 !important;
+    .v-data-table-header {
+      th:nth-child(2) {
+        padding-left: 0!important;
       }
     }
 

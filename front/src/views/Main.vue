@@ -110,7 +110,6 @@ export default {
         {text: 'Members', value: 'stakes.participantsNum', align: 'center', sortable: true, filterable: false,},
         {text: 'Assets', value: 'stakes.total', align: 'center', sortable: true, filterable: false,},
         {value: 'name', align: ' d-none', sortable: false,},
-        {value: 'stakes.total', align: ' d-none', sortable: true, filterable: false,},
         {sortable: false, filterable: false,},
       ],
       dialogInstall: false,
