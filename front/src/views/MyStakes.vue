@@ -285,9 +285,21 @@ export default {
 <style lang="scss">
 .myStakes {
   &__list {
+    > .v-data-table__wrapper {
+      > table {
+        > tbody {
+          > tr {
+            > td {
+              height: 63px !important;
+            }
+          }
+        }
+      }
+    }
+
     .v-data-table-header {
       th:nth-child(2) {
-        padding-left: 0!important;
+        padding-left: 0 !important;
       }
     }
 

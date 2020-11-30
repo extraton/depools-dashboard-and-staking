@@ -168,7 +168,6 @@ export default {
       if (value.length === 1) {//dirty hack
         this.sortBy = ['isNameSet', value[0]];
       }
-      console.log(this.sortBy);
     },
     updateSortDesc(value) {
       if (value.length === 1) {//dirty hack
@@ -182,6 +181,18 @@ export default {
 <style lang="scss">
 .depoolsList {
   &__list {
+    > .v-data-table__wrapper {
+      > table {
+        > tbody {
+          > tr {
+            > td {
+              height: 63px !important;
+            }
+          }
+        }
+      }
+    }
+
     .v-data-table-header {
       th:nth-child(2) {
         padding-left: 0 !important;
@@ -215,5 +226,6 @@ export default {
       }
     }
   }
+
 }
 </style>
