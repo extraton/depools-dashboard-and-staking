@@ -64,13 +64,13 @@
           <td style="text-align:center;padding:0">
             <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
           </td>
+          <td style="text-align:center">{{ utils.convertFromNano(props.item.params.validatorAssurance) }}</td>
+          <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
+          <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
           <td style="text-align:center">
             {{ utils.convertFromNano(props.item.stakes.total, 0) }}
             <v-icon color="primary" small>mdi-diamond-stone</v-icon>
           </td>
-          <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
-          <td style="text-align:center">{{ utils.convertFromNano(props.item.params.validatorAssurance) }}</td>
-          <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
           <td>
             <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
               stake now
@@ -105,10 +105,10 @@ export default {
         {sortable: false, filterable: false,},
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Stability', align: 'center', sortable: false, filterable: false,},
-        {text: 'Assets', value: 'stakes.total', align: 'center', sortable: true, filterable: false,},
-        {text: 'Members', value: 'stakes.participantsNum', align: 'center', sortable: true, filterable: false,},
         {text: 'Assurance', value: 'params.validatorAssurance', align: 'center', sortable: true, filterable: false,},
         {text: 'Fee', value: 'params.validatorRewardFraction', align: 'center', sortable: true, filterable: false,},
+        {text: 'Members', value: 'stakes.participantsNum', align: 'center', sortable: true, filterable: false,},
+        {text: 'Assets', value: 'stakes.total', align: 'center', sortable: true, filterable: false,},
         {value: 'name', align: ' d-none', sortable: false,},
         {value: 'stakes.total', align: ' d-none', sortable: true, filterable: false,},
         {sortable: false, filterable: false,},
