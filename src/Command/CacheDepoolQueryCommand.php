@@ -4,6 +4,7 @@ use App\Controller\IndexController;
 use App\Entity\Depool;
 use App\Entity\DepoolEvent;
 use App\Repository\DepoolEventRepository;
+use App\Ton;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -12,28 +13,35 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CacheDepoolQueryCommand extends AbstractCommand
 {
-    private const ROUND_END = 1606141148;
-    private const VALIDATORS_ELECTED_FOR = 65536;
-
     private EntityManagerInterface $entityManager;
     private string $cacheDir;
+    private Ton $ton;
 
     public function __construct(
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        string $cacheDir
+        string $cacheDir,
+        Ton $ton
     )
     {
         $this->entityManager = $entityManager;
         parent::__construct($logger);
         $this->cacheDir = $cacheDir;
+        $this->ton = $ton;
     }
 
     protected function do(InputInterface $input, OutputInterface $output)
     {
-        $grid = $this->compileRoundGrid();
+        $grid = $this->ton->compileRoundGrid(10);
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
-        $data = [];
+        $data = [
+            'depools' => [],
+            'stat' => [
+                'depools' => ['total' => 0, 'new' => 0],
+                'members' => ['total' => 0, 'new' => 0],
+                'assets' => ['total' => 0, 'new' => 0],
+            ],
+        ];
         $depools = $depoolRepository->findAll();
         foreach ($depools as $depool) {
             $data[] = [
@@ -78,26 +86,5 @@ class CacheDepoolQueryCommand extends AbstractCommand
         }
 
         return array_reverse($stability);
-    }
-
-
-    private function compileRoundGrid(): array
-    {
-        $grid = [];
-        $time = time();
-        $lastRoundEnd = self::ROUND_END;
-        while ($lastRoundEnd + self::VALIDATORS_ELECTED_FOR < $time) {
-            $lastRoundEnd += self::VALIDATORS_ELECTED_FOR;
-        }
-        for ($i = 0; $i < 10; $i++) {
-            $grid[] = [
-                'start' => $lastRoundEnd - (self::VALIDATORS_ELECTED_FOR * ($i + 1)),
-                'end' => $lastRoundEnd - (self::VALIDATORS_ELECTED_FOR * $i),
-//                'start' => \DateTime::createFromFormat('U', $lastRoundEnd - (self::VALIDATORS_ELECTED_FOR * ($i + 1)))->format('Y-m-d H:i:s'),
-//                'end' => \DateTime::createFromFormat('U', $lastRoundEnd - (self::VALIDATORS_ELECTED_FOR * $i))->format('Y-m-d H:i:s'),
-            ];
-        }
-
-        return $grid;
     }
 }

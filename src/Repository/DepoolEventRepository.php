@@ -53,8 +53,26 @@ class DepoolEventRepository extends ServiceEntityRepository
             ->setParameter('name', DepoolEvent::NAME_ROUND_COMPLETE)
             ->andWhere('n.createdTs >= :createdTs')
             ->setParameter('createdTs', $dateFrom)
+            ->orderBy('n.createdTs', 'ASC')
             ->getQuery()
             ->getResult()
+            ;
+    }
+
+    public function findRoundCompleteByDepoolBetween(Depool $depool, \DateTime $from, \DateTime $to): ?DepoolEvent
+    {
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.depool = :depool')
+            ->setParameter('depool', $depool)
+            ->andWhere('n.name = :name')
+            ->setParameter('name', DepoolEvent::NAME_ROUND_COMPLETE)
+            ->andWhere('n.createdTs >= :from')
+            ->setParameter('from', $from)
+            ->andWhere('n.createdTs <= :to')
+            ->setParameter('to', $to)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
             ;
     }
 

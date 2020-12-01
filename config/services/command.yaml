@@ -38,5 +38,15 @@ services:
       - '@logger'
       - '@doctrine.orm.entity_manager'
       - '%cacheDir%'
+      - '@App\Ton'
     tags:
       - { name: 'console.command', command: 'depool:query:cache' }
+
+  App\Command\CompileStatsCommand:
+    parent: App\Command\AbstractCommand
+    arguments:
+      - '@logger'
+      - '@doctrine.orm.entity_manager'
+      - '@App\Ton'
+    tags:
+      - { name: 'console.command', command: 'depool:stats:compile' }
