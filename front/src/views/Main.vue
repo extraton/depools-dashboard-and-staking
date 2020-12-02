@@ -37,50 +37,55 @@
 
     <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="stakingDepool"/>
 
-    <v-data-table
-        @update:sort-by="updateSortBy"
-        @update:sort-desc="updateSortDesc"
-        :headers="headers"
-        :items="items"
-        :mobile-breakpoint="100"
-        :loading="loading"
-        :items-per-page="50"
-        :search="search"
-        :sort-by="sortBy"
-        :sort-desc="sortDesc"
-        class="depoolsList__list"
-    >
-      <template v-slot:top>
-        <table-search-toolbar @search="find" @added="loadItems"/>
-      </template>
-      <template slot="item" slot-scope="props">
-        <tr>
-          <td style="width:120px">
-            <addr-copy-button :address="props.item.address"/>
-            <addr-explorer-button :link="props.item.link"/>
-            <addr-link-button :address="props.item.address"/>
-          </td>
-          <td style="padding-left:0">
-            <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
-          </td>
-          <td style="text-align:center;padding:0">
-            <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
-          </td>
-          <td style="text-align:center">{{ utils.convertFromNano(props.item.params.validatorAssurance) }}</td>
-          <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
-          <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
-          <td style="text-align:center">
-            {{ utils.convertFromNano(props.item.stakes.total, 0) }}
-            <v-icon color="primary" small>mdi-diamond-stone</v-icon>
-          </td>
-          <td>
-            <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
-              stake now
-            </v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
+    <div>
+      <main-stat :stat="stat"/>
+    </div>
+    <div>
+      <v-data-table
+          @update:sort-by="updateSortBy"
+          @update:sort-desc="updateSortDesc"
+          :headers="headers"
+          :items="items"
+          :mobile-breakpoint="100"
+          :loading="loading"
+          :items-per-page="50"
+          :search="search"
+          :sort-by="sortBy"
+          :sort-desc="sortDesc"
+          class="depoolsList__list"
+      >
+        <template v-slot:top>
+          <table-search-toolbar @search="find" @added="loadItems"/>
+        </template>
+        <template slot="item" slot-scope="props">
+          <tr>
+            <td style="width:120px">
+              <addr-copy-button :address="props.item.address"/>
+              <addr-explorer-button :link="props.item.link"/>
+              <addr-link-button :address="props.item.address"/>
+            </td>
+            <td style="padding-left:0">
+              <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
+            </td>
+            <td style="text-align:center;padding:0">
+              <stability :values="props.item.stability" :key="`stability-${props.item.id}`"/>
+            </td>
+            <td style="text-align:center">{{ utils.convertFromNano(props.item.params.validatorAssurance) }}</td>
+            <td style="text-align:center">{{ props.item.params.validatorRewardFraction }}%</td>
+            <td style="text-align:center">{{ props.item.stakes.participantsNum }}</td>
+            <td style="text-align:center">
+              {{ utils.convertFromNano(props.item.stakes.total, 0) }}
+              <v-icon color="primary" small>mdi-diamond-stone</v-icon>
+            </td>
+            <td>
+              <v-btn @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
+                stake now
+              </v-btn>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+    </div>
   </div>
 </template>
 
@@ -93,9 +98,13 @@ import Stability from "@/components/Stability";
 import AddrCopyButton from "@/components/AddrCopyButton";
 import AddrExplorerButton from "@/components/AddrExplorerButton";
 import AddrLinkButton from "@/components/AddrLinkButton";
+import MainStat from "@/components/MainStat";
 
 export default {
-  components: {AddrLinkButton, Stability, TableSearchToolbar, StakingDialog, Addr, AddrCopyButton, AddrExplorerButton},
+  components: {
+    MainStat,
+    AddrLinkButton, Stability, TableSearchToolbar, StakingDialog, Addr, AddrCopyButton, AddrExplorerButton
+  },
   data() {
     return {
       config: global.config,
@@ -104,6 +113,7 @@ export default {
       sortBy: ['isNameSet', 'stakes.total'],
       sortDesc: [true, true],
       items: [],
+      stat: null,
       loading: false,
       headers: [
         {sortable: false, filterable: false,},
@@ -141,7 +151,8 @@ export default {
       this.loading = true;
       try {
         const response = await this.$http.get('/api/depools');
-        this.items = response.body;
+        this.items = response.body.depools;
+        this.stat = response.body.stat;
       } catch (response) {
         this.$snack.danger({text: 'Error ' + response.status});
       } finally {
@@ -181,6 +192,8 @@ export default {
 <style lang="scss">
 .depoolsList {
   &__list {
+    margin-top: 15px;
+
     > .v-data-table__wrapper {
       > table {
         > tbody {
@@ -226,6 +239,5 @@ export default {
       }
     }
   }
-
 }
 </style>

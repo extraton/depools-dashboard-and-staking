@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\DepoolStatRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=DepoolStatRepository::class)
  */
 class DepoolStat
 {
@@ -53,5 +54,30 @@ class DepoolStat
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getDepoolsNum(): int
+    {
+        return $this->depoolsNum;
+    }
+
+    public function getMembersNum(): int
+    {
+        return $this->membersNum;
+    }
+
+    public function getAssetsAmount(): int
+    {
+        return $this->assetsAmount;
+    }
+
+    public function getRoundEndTs(): \DateTime
+    {
+        return $this->roundEndTs;
+    }
+
+    public function getApy(): string
+    {
+        return $this->apy;
     }
 }

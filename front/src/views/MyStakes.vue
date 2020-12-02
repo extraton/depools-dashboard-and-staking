@@ -196,7 +196,7 @@ export default {
       this.loading = true;
       try {
         const response = await this.$http.get('/api/depools');
-        this.items = response.body.filter(function (depool) {
+        this.items = response.body.depools.filter(function (depool) {
           for (const stake of depool.stakes.items) {
             if (stake.address === this.address) {
               let item = depool;

@@ -7,6 +7,7 @@ import VueResource from 'vue-resource';
 import VueClipboards from "vue-clipboards";
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
+import "./scss/chartist.scss";
 
 let snack = {
   install(Vue) {

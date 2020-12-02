@@ -3,7 +3,9 @@
 use App\Controller\IndexController;
 use App\Entity\Depool;
 use App\Entity\DepoolEvent;
+use App\Entity\DepoolStat;
 use App\Repository\DepoolEventRepository;
+use App\Repository\DepoolStatRepository;
 use App\Ton;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -13,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CacheDepoolQueryCommand extends AbstractCommand
 {
+    private const APY_LENGTH = 9;
+
     private EntityManagerInterface $entityManager;
     private string $cacheDir;
     private Ton $ton;
@@ -34,17 +38,52 @@ class CacheDepoolQueryCommand extends AbstractCommand
     {
         $grid = $this->ton->compileRoundGrid(10);
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
+        /** @var DepoolStatRepository $depoolStatRepository */
+        $depoolStatRepository = $this->entityManager->getRepository(DepoolStat::class);
+
         $data = [
             'depools' => [],
             'stat' => [
                 'depools' => ['total' => 0, 'new' => 0],
                 'members' => ['total' => 0, 'new' => 0],
                 'assets' => ['total' => 0, 'new' => 0],
+                'apy' => [],
             ],
         ];
+
+        $depoolStats = $depoolStatRepository->getAllOrderedByRound();
+        $depoolStatsNum = count($depoolStats);
+        if ($depoolStatsNum > 0) {
+            $ultimateDepoolStat = $depoolStats[$depoolStatsNum - 1];
+            $data['stat']['depools']['total'] = $ultimateDepoolStat->getDepoolsNum();
+            $data['stat']['members']['total'] = $ultimateDepoolStat->getMembersNum();
+            $data['stat']['assets']['total'] = $ultimateDepoolStat->getAssetsAmount();
+            if ($depoolStatsNum > 1) {
+                $penultimateDepoolStat = $depoolStats[$depoolStatsNum - 2];
+                $data['stat']['depools']['new'] = $ultimateDepoolStat->getDepoolsNum() - $penultimateDepoolStat->getDepoolsNum();
+                $data['stat']['members']['new'] = $ultimateDepoolStat->getMembersNum() - $penultimateDepoolStat->getMembersNum();
+                $data['stat']['assets']['new'] = $ultimateDepoolStat->getAssetsAmount() - $penultimateDepoolStat->getAssetsAmount();
+            }
+        }
+
+        if ($depoolStatsNum > self::APY_LENGTH) {
+            $apyLength = self::APY_LENGTH;
+            $apyStep = $depoolStatsNum / self::APY_LENGTH;
+        } else {
+            $apyLength = $depoolStatsNum;
+            $apyStep = 1;
+        }
+        for ($i = 0; $i < $apyLength; $i++) {
+            $index = (int)ceil($i * $apyStep);
+            if ($index !== $depoolStatsNum - 1) {
+                $this->addApyToData($data, $depoolStats[$index]);
+            }
+        }
+        $this->addApyToData($data, $depoolStats[$depoolStatsNum - 1]);
+
         $depools = $depoolRepository->findAll();
         foreach ($depools as $depool) {
-            $data[] = [
+            $data['depools'][] = [
                 'id' => $depool->getId(),
                 'name' => $depool->getName(),
                 'isNameSet' => null !== $depool->getName(),
@@ -86,5 +125,11 @@ class CacheDepoolQueryCommand extends AbstractCommand
         }
 
         return array_reverse($stability);
+    }
+
+    private function addApyToData(array &$data, DepoolStat $depoolStat)
+    {
+        $data['stat']['apy']['series'][] = $depoolStat->getApy();
+        $data['stat']['apy']['labels'][] = $depoolStat->getRoundEndTs()->format('M j');
     }
 }

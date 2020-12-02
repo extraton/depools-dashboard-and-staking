@@ -23,6 +23,9 @@ export default {
   convertFromNanoToInt(amountNano, direction) {
     return new BigNumber(amountNano).dividedBy(new BigNumber('1000000000')).integerValue(direction);
   },
+  formatNumber(number) {
+    return new BigNumber(number).toFormat();
+  },
   convertToNano(amount) {
     return (BigInt(amount) * BigInt('1000000000')).toString();
   },

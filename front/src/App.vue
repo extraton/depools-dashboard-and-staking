@@ -4,7 +4,7 @@
     <div>
       <v-app-bar>
         <v-icon left>mdi-diamond-stone</v-icon>
-        <v-toolbar-title>FreeTON Depool Dashboard and Staking</v-toolbar-title>
+        <v-toolbar-title>FreeTON Staking</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn href="https://t.me/extraton" target="_blank" text outlined>
           <v-icon left>mdi-telegram</v-icon>
@@ -22,9 +22,9 @@
       </v-app-bar>
     </div>
 
-    <v-card width="85%" style="margin:30px auto">
+    <div class="content">
       <router-view :search="search"/>
-    </v-card>
+    </div>
   </v-app>
 </template>
 
@@ -49,3 +49,16 @@ export default {
   },
 };
 </script>
+
+<style>
+.content {
+  width: 85%;
+  margin: 30px auto;
+}
+
+@media screen and (max-width: 1100px) {
+  .content {
+    width: 95%;
+  }
+}
+</style>
