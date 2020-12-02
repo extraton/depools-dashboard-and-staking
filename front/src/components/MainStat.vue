@@ -30,18 +30,18 @@
               <v-skeleton-loader v-else type="heading" width="110"/>
             </div>
           </div>
-          <div>
-            <div>Total Assets:</div>
+          <div class="mainStat__common__assets">
+            <div>Assets:</div>
             <div>
               <template v-if="stat">
                 {{ utils.formatNumber(stat.assets.total) }}
                 <v-icon color="primary" style="margin-bottom:3px">mdi-diamond-stone</v-icon>
-                <sup v-if="stat.assets.new!=0" style="margin-left:3px">
+                <sup v-if="stat.assets.new!=0">
                   <template v-if="stat.assets.new>0">+</template>
                   <span>{{ utils.formatNumber(stat.assets.new) }}</span>
                 </sup>
               </template>
-              <v-skeleton-loader v-else type="heading" width="225"/>
+              <v-skeleton-loader v-else type="heading" width="195"/>
             </div>
           </div>
         </div>
@@ -91,9 +91,10 @@ export default {
 .mainStat {
   margin: 0 auto;
   display: flex;
+
   > div.v-card {
-    min-width: 460px;
-    height:286px
+    min-width: 350px;
+    height: 286px
   }
 
   @media screen and (max-width: 1050px) {
@@ -114,6 +115,20 @@ export default {
     font-size: 1.7rem;
     font-weight: 400;
     line-height: 2.5rem;
+
+    &__assets {
+      sup {
+        margin-left: 3px;
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      &__assets {
+        sup {
+          display: none;
+        }
+      }
+    }
 
     > div {
       display: table-row;
