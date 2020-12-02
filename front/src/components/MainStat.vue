@@ -72,12 +72,6 @@ export default {
   watch: {
     stat(val) {
       if (val) {
-        // const data = {
-        //   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-        //   series: [
-        //     [5, 2, 4, 2, 0]
-        //   ]
-        // };
         const data = {
           labels: this.stat.apy.labels,
           series: [this.stat.apy.series]
