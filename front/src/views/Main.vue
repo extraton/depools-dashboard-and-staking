@@ -48,7 +48,8 @@
           :items="items"
           :mobile-breakpoint="100"
           :loading="loading"
-          :items-per-page="50"
+          :items-per-page="itemsPerPage"
+          :page.sync="page"
           :search="search"
           :sort-by="sortBy"
           :sort-desc="sortDesc"
@@ -58,7 +59,7 @@
           <table-search-toolbar @search="find" @added="loadItems"/>
         </template>
         <template slot="item" slot-scope="props">
-          <tr>
+          <tr :class="{'depoolsList__list__row--namedBorder': isNamedBorder(props.index)}">
             <td style="width:120px">
               <addr-copy-button :address="props.item.address"/>
               <addr-explorer-button :link="props.item.link"/>
@@ -113,6 +114,9 @@ export default {
       sortBy: ['isNameSet', 'stakes.total'],
       sortDesc: [true, true],
       items: [],
+      itemsPerPage: 50,
+      page: 1,
+      namedDepoolsAmount: 0,
       stat: null,
       loading: false,
       headers: [
@@ -141,7 +145,7 @@ export default {
         return null;
       }
       return this.items.find(o => o.id === this.stakingDepoolId);
-    }
+    },
   },
   methods: {
     init() {
@@ -153,6 +157,7 @@ export default {
         const response = await this.$http.get('/api/depools');
         this.items = response.body.depools;
         this.stat = response.body.stat;
+        this.namedDepoolsAmount = response.body.namedDepoolsAmount;
       } catch (response) {
         this.$snack.danger({text: 'Error ' + response.status});
       } finally {
@@ -184,6 +189,9 @@ export default {
       if (value.length === 1) {//dirty hack
         this.sortDesc = [true, value[0]];
       }
+    },
+    isNamedBorder(i) {
+      return i === this.namedDepoolsAmount - 1 && this.page === Math.ceil(this.namedDepoolsAmount / this.itemsPerPage);
     }
   }
 }
@@ -203,6 +211,12 @@ export default {
             }
           }
         }
+      }
+    }
+
+    &__row {
+      &--namedBorder td {
+        border-bottom: 3px double #ffffff !important;
       }
     }
 

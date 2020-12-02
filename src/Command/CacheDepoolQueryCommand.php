@@ -43,6 +43,7 @@ class CacheDepoolQueryCommand extends AbstractCommand
 
         $data = [
             'depools' => [],
+            'namedDepoolsAmount' => 0,
             'stat' => [
                 'depools' => ['total' => 0, 'new' => 0],
                 'members' => ['total' => 0, 'new' => 0],
@@ -83,10 +84,14 @@ class CacheDepoolQueryCommand extends AbstractCommand
 
         $depools = $depoolRepository->findAll();
         foreach ($depools as $depool) {
+            $isNameSet = null !== $depool->getName();
+            if ($isNameSet) {
+                $data['namedDepoolsAmount']++;
+            }
             $data['depools'][] = [
                 'id' => $depool->getId(),
                 'name' => $depool->getName(),
-                'isNameSet' => null !== $depool->getName(),
+                'isNameSet' => $isNameSet,
                 'address' => $depool->getAddress(),
                 'link' => $depool->compileLink(),
                 'dateCreate' => $depool->getCreatedTs()->format('Y-m-d H:i'),
