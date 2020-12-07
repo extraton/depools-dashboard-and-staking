@@ -6,11 +6,6 @@
           Stake
         </v-card-title>
         <v-card-text>
-          <v-alert type="warning" border="left" outlined dense>
-            Warning!
-            <br/>The application is in beta testing stage.
-            <br/>Available for testing purposes only.
-          </v-alert>
           <v-simple-table>
             <template v-slot:default>
               <tbody>
@@ -41,7 +36,7 @@
           </v-simple-table>
           <v-text-field v-model="amount" type="number"
                         :label="`Crystals Amount (${minStakeCrystalView} minimum)`"
-                        :rules="[rules.required, rules.integer, rules.greaterOrEqualMinimum, rules.lessOrEqualTestLimit]"
+                        :rules="[rules.required, rules.integer, rules.greaterOrEqualMinimum]"
                         style="margin-top:15px"
                         outlined/>
           <div class="red--text">{{ error }}</div>
@@ -78,9 +73,6 @@ export default {
       integer: value => new BigNumber(value).isInteger() || 'Integer only',
       greaterOrEqualMinimum(value) {
         return new BigNumber(value).isGreaterThanOrEqualTo(t.minStakeCrystalInt) || `Must be greater or equal ${t.minStakeCrystalView}.`
-      },
-      lessOrEqualTestLimit(value) {
-        return new BigNumber(value).isLessThanOrEqualTo(new BigNumber(1000)) || `Staking limited up to 1000 crystals per time while beta testing.`
       },
     },
     error: '',

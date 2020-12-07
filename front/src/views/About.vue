@@ -11,7 +11,6 @@
         <a href="https://chrome.google.com/webstore/detail/extraton/hhimbkmlnofjdajamcojlcmgialocllm" target="_blank">
           extraTON extension
         </a> to your Google Chrome browser.
-        <br/>Currently it's in a beta-testing mode and staking is limited to 1000 crystals per one time.
       </div>
 
       <div class="about__howToUse">
