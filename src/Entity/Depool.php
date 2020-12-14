@@ -186,7 +186,7 @@ class Depool
     public function compileLink()
     {
         return sprintf(
-            "https://%s/accounts?section=details&id=%s",
+            "https://%s/accounts/accountDetails?id=%s",
             $this->getNet()->getExplorer(),
             $this->getAddress()
         );
