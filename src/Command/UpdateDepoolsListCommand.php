@@ -60,11 +60,12 @@ class UpdateDepoolsListCommand extends AbstractCommand
         foreach ($blockchainDepools as $blockchainDepool) {
             $depool = $this->findExistingDepool($dbDepools, $blockchainDepool['id']);
             $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
+            $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
             if (null === $depool) {
-                $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
                 $depoolVersion = Depool::CODE_HASHES[$blockchainDepool['code_hash']];
                 $depool = new Depool($net, $depoolVersion, $blockchainDepool['id'], $depoolInfo, $stakes);
             } else {
+                $depool->setInfo($depoolInfo);
                 $depool->setStakes($stakes);
             }
             $this->entityManager->persist($depool);

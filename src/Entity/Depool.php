@@ -211,4 +211,9 @@ class Depool
     {
         return $this->version;
     }
+
+    public function setInfo(array $info): void
+    {
+        $this->info = $info;
+    }
 }
