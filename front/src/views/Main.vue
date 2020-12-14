@@ -80,7 +80,7 @@
               <v-icon color="primary" small>mdi-diamond-stone</v-icon>
             </td>
             <td>
-              <span v-if="props.item.params.depoolClosed">Depool's closing</span>
+              <span v-if="props.item.params.poolClosed">Depool's closing</span>
               <v-btn v-else @click="stake(props.item.id)" color="primary" :disabled="isStakingDialogOpening" x-small>
                 stake now
               </v-btn>

@@ -92,7 +92,7 @@
             <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
             <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'Staked' : 'Withdrawing' }}</td>
             <td class="myStakes__list__actions">
-              <span v-if="props.item.params.depoolClosed">Depool's closing</span>
+              <span v-if="props.item.params.poolClosed">Depool's closing</span>
               <template v-else>
                 <div>
                   <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
