@@ -53,6 +53,9 @@ class UpdateDepoolEventsCommand extends AbstractCommand
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
         $depools = $depoolRepository->findAll();
         foreach ($depools as $depool) {
+            if ($depool->isDeleted()) {
+                continue;
+            }
             /** @var DepoolEventRepository $depoolEventRepository */
             $depoolEventRepository = $this->entityManager->getRepository(DepoolEvent::class);
             $lastEvent = $depoolEventRepository->findLastEventByDepool($depool);

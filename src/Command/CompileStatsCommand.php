@@ -57,6 +57,9 @@ class CompileStatsCommand extends AbstractCommand
         $assetsAmountNano = 0;
         $roundProfits = [];
         foreach ($depools as $depool) {
+            if ($depool->isDeleted()) {
+                continue;
+            }
             $stakes = $depool->compileStakes();
             $membersNum += hexdec($stakes['participantsNum']);
             $assetsAmountNano += $stakes['total'];

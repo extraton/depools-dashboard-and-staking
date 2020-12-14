@@ -4,3 +4,4 @@ MAILTO=""
 * * * * * /usr/bin/php /var/www/html/bin/console depool:names:update 1
 */5 * * * * /usr/bin/php /var/www/html/bin/console depool:events:update 1
 */5 * * * * /usr/bin/php /var/www/html/bin/console depool:stats:compile
+* * * * * /usr/bin/php /var/www/html/bin/console depool:list:clean 1

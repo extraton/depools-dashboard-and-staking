@@ -53,6 +53,11 @@ class Depool
     private $stakes;
 
     /**
+     * @ORM\Column(type="boolean", options={"default":false})
+     */
+    private $isDeleted = false;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $createdTs;
@@ -165,7 +170,7 @@ class Depool
             'participantRewardFraction' => hexdec($this->getInfo()['participantRewardFraction']),
             'validatorRewardFraction' => hexdec($this->getInfo()['validatorRewardFraction']),
             'balanceThreshold' => hexdec($this->getInfo()['balanceThreshold']),
-            'validatorWallet' => $this->getInfo()['validatorWallet'],
+            'poolClosed' => $this->getInfo()['poolClosed'],
         ];
     }
 
@@ -181,5 +186,15 @@ class Depool
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setIsDeleted(): void
+    {
+        $this->isDeleted = true;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
     }
 }

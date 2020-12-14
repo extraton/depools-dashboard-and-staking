@@ -13,6 +13,15 @@ services:
     tags:
       - { name: 'console.command', command: 'depool:list:update' }
 
+  App\Command\CleanDepoolsListCommand:
+    parent: App\Command\AbstractCommand
+    arguments:
+      - '@logger'
+      - '@doctrine.orm.entity_manager'
+      - '@App\Ton'
+    tags:
+      - { name: 'console.command', command: 'depool:list:clean' }
+
   App\Command\UpdateDepoolEventsCommand:
     parent: App\Command\AbstractCommand
     arguments:

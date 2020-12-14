@@ -59,17 +59,17 @@
       <withdraw-dialog @success="dialogWithdrew = true" ref="withdrawDialog" :depool="withdrawDepool"/>
       <staking-dialog @success="dialogStaked = true" ref="stakingDialog" :depool="withdrawDepool"/>
       <v-data-table
-          :headers="headers"
-          :items="items"
-          :mobile-breakpoint="100"
-          :items-per-page="10000"
-          :search="search"
-          :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
-          :loading="loading"
-          class="myStakes__list"
-          :sort-by="['stakes.my.total']"
-          :sort-desc="[true]"
-          hide-default-footer
+        :headers="headers"
+        :items="items"
+        :mobile-breakpoint="100"
+        :items-per-page="10000"
+        :search="search"
+        :no-data-text="`No one stake found for address ${address} in main.ton.dev.`"
+        :loading="loading"
+        class="myStakes__list"
+        :sort-by="['stakes.my.total']"
+        :sort-desc="[true]"
+        hide-default-footer
       >
         <template v-slot:top>
           <table-search-toolbar @search="find" @added="loadItems"/>
@@ -92,21 +92,25 @@
             <td style="text-align:center">{{ utils.convertFromNano(props.item.stakes.my.withdrawValue) }}</td>
             <td style="text-align:center">{{ props.item.stakes.my.reinvest ? 'Staked' : 'Withdrawing' }}</td>
             <td class="myStakes__list__actions">
-              <div>
-                <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
-              </div>
-              <div>
-                <v-btn v-if="props.item.stakes.my.reinvest" @click="withdraw(props.item.id)" color="secondary" x-small>
-                  withdraw
-                </v-btn>
-              </div>
-              <template v-if="!props.item.stakes.my.reinvest || props.item.stakes.my.withdrawValue - 0 > 0">
+              <span v-if="props.item.params.depoolClosed">Depool's closing</span>
+              <template v-else>
                 <div>
-                  <v-btn @click="ticktock(props.item.id)" x-small>ticktock</v-btn>
+                  <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
                 </div>
                 <div>
-                  <v-btn @click="cancelWithdrawing(props.item.id)" color="warning" x-small>cancel withdrawing</v-btn>
+                  <v-btn v-if="props.item.stakes.my.reinvest" @click="withdraw(props.item.id)" color="secondary"
+                         x-small>
+                    withdraw
+                  </v-btn>
                 </div>
+                <template v-if="!props.item.stakes.my.reinvest || props.item.stakes.my.withdrawValue - 0 > 0">
+                  <div>
+                    <v-btn @click="ticktock(props.item.id)" x-small>ticktock</v-btn>
+                  </div>
+                  <div>
+                    <v-btn @click="cancelWithdrawing(props.item.id)" color="warning" x-small>cancel withdrawing</v-btn>
+                  </div>
+                </template>
               </template>
             </td>
           </tr>
@@ -235,11 +239,11 @@ export default {
         }
         const depool = this.items.find(o => o.id === depoolId);
         await utils.sendTransactionToDepool(
-            provider,
-            depool.address,
-            'cancelWithdrawal',
-            {},
-            utils.transactionAdditionalFee
+          provider,
+          depool.address,
+          'cancelWithdrawal',
+          {},
+          utils.transactionAdditionalFee
         );
         this.dialogWithdrawCanceled = true;
       } catch (e) {
@@ -262,11 +266,11 @@ export default {
         }
         const depool = this.items.find(o => o.id === depoolId);
         await utils.sendTransactionToDepool(
-            provider,
-            depool.address,
-            'ticktock',
-            {},
-            utils.transactionAdditionalFee
+          provider,
+          depool.address,
+          'ticktock',
+          {},
+          utils.transactionAdditionalFee
         );
         this.$snack.danger({text: 'Ticktock successfully sent.'})
       } catch (e) {

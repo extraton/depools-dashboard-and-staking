@@ -84,6 +84,9 @@ class CacheDepoolQueryCommand extends AbstractCommand
 
         $depools = $depoolRepository->findAll();
         foreach ($depools as $depool) {
+            if ($depool->isDeleted()) {
+                continue;
+            }
             $isNameSet = null !== $depool->getName();
             if ($isNameSet) {
                 $data['namedDepoolsAmount']++;

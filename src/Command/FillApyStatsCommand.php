@@ -56,6 +56,9 @@ class FillApyStatsCommand extends AbstractCommand
             }
             $roundProfits = [];
             foreach ($depools as $depool) {
+                if ($depool->isDeleted()) {
+                    continue;
+                }
                 $depoolEvent = $depoolEventRepository->findRoundCompleteByDepoolBetween($depool, $roundDateStart, $roundDateEnd);
                 if (null !== $depoolEvent) {
                     $round = $depoolEvent->getData()['round'];
