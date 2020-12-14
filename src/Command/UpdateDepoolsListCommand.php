@@ -62,7 +62,8 @@ class UpdateDepoolsListCommand extends AbstractCommand
             $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
             if (null === $depool) {
                 $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
-                $depool = new Depool($net, $blockchainDepool['id'], $depoolInfo, $stakes);
+                $depoolVersion = Depool::CODE_HASHES[$blockchainDepool['code_hash']];
+                $depool = new Depool($net, $depoolVersion, $blockchainDepool['id'], $depoolInfo, $stakes);
             } else {
                 $depool->setStakes($stakes);
             }
@@ -90,7 +91,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
     private function findDepoolsInBlockchainRecursive(TonClient $tonClient, array &$depools): void
     {
         $filters = new Filters();
-        $filters->add('code_hash', Filters::EQ, Depool::CODE_HASH);
+        $filters->add('code_hash', Filters::IN, array_keys(Depool::CODE_HASHES));
         if (count($depools) > 0) {
             $filters->add('balance', Filters::LE, end($depools)['balance']);
         }
@@ -100,6 +101,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
             'accounts',
             [
                 'id',
+                'code_hash',
                 'balance(format: DEC)',
                 'boc',
             ],

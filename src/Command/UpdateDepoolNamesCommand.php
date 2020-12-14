@@ -56,9 +56,10 @@ class UpdateDepoolNamesCommand extends AbstractCommand
         $dbDepools = $depoolRepository->findAll();
 
         foreach ($names as $address => $name) {
-            $depool = $this->findExistingDepoolByCreateAddress($dbDepools, $address);
-            if (null !== $depool) {
-                $depool->setName(mb_substr(hex2bin($name), 0, 16));
+            $normalizedName = mb_substr(hex2bin($name), 0, 16);
+            $depools = $this->findExistingDepoolsByCreateAddress($dbDepools, $address);
+            foreach ($depools as $depool) {
+                $depool->setName($normalizedName);
                 $this->entityManager->persist($depool);
             }
         }
@@ -102,14 +103,16 @@ class UpdateDepoolNamesCommand extends AbstractCommand
         return $result['value0'];
     }
 
-    private function findExistingDepoolByCreateAddress(array $dbDepools, string $address): ?Depool
+    /** @return Depool[] */
+    private function findExistingDepoolsByCreateAddress(array $dbDepools, string $address): array
     {
+        $depools = [];
         foreach ($dbDepools as $dbDepool) {
             if ($dbDepool->getInfo()['validatorWallet'] === $address) {
-                return $dbDepool;
+                $depools[] = $dbDepool;
             }
         }
 
-        return null;
+        return $depools;
     }
 }

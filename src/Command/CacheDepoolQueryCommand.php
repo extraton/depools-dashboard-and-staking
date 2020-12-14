@@ -94,6 +94,7 @@ class CacheDepoolQueryCommand extends AbstractCommand
             $data['depools'][] = [
                 'id' => $depool->getId(),
                 'name' => $depool->getName(),
+                'version' => $depool->getVersion(),
                 'isNameSet' => $isNameSet,
                 'address' => $depool->getAddress(),
                 'link' => $depool->compileLink(),

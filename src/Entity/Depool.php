@@ -17,7 +17,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Depool
 {
-    public const CODE_HASH = 'b4ad6c42427a12a65d9a0bffb0c2730dd9cdf830a086d94636dab7784e13eb38';
+    public const CODE_HASHES = [
+        'b4ad6c42427a12a65d9a0bffb0c2730dd9cdf830a086d94636dab7784e13eb38' => 1,
+        'a46c6872712ec49e481a7f3fc1f42469d8bd6ef3fae906aa5b9927e5a3fb3b6b' => 3,
+    ];
 
     /**
      * @ORM\Id
@@ -31,6 +34,11 @@ class Depool
      * @ORM\JoinColumn(name="net_id", referencedColumnName="id")
      */
     private $net;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $version;
 
     /**
      * @ORM\Column(type="string", length=16, nullable=true)
@@ -74,9 +82,10 @@ class Depool
      */
     private $events;
 
-    public function __construct(Net $net, string $address, array $info, array $stakes)
+    public function __construct(Net $net, int $version, string $address, array $info, array $stakes)
     {
         $this->net = $net;
+        $this->version = $version;
         $this->address = $address;
         $this->info = $info;
         $this->stakes = $stakes;
@@ -196,5 +205,10 @@ class Depool
     public function isDeleted(): bool
     {
         return $this->isDeleted;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
     }
 }
