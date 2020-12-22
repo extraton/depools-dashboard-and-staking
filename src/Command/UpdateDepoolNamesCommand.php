@@ -53,12 +53,11 @@ class UpdateDepoolNamesCommand extends AbstractCommand
         $names = $this->getNamesByBoc($tonClient, $boc, $this->namesContractAddress);
 
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
-        $dbDepools = $depoolRepository->findAll();
 
-        foreach ($names as $address => $name) {
-            $normalizedName = mb_substr(hex2bin($name), 0, 16);
-            $depools = $this->findExistingDepoolsByCreateAddress($dbDepools, $address);
-            foreach ($depools as $depool) {
+        foreach ($names as $item) {
+            $depool = $depoolRepository->findOneBy(['address' => $item['depoolAddress']]);
+            if (null !== $depool && $depool->getInfo()['validatorWallet'] === $item['msigAddress']) {
+                $normalizedName = mb_substr(hex2bin($item['name']), 0, 16);
                 $depool->setName($normalizedName);
                 $this->entityManager->persist($depool);
             }
@@ -101,18 +100,5 @@ class UpdateDepoolNamesCommand extends AbstractCommand
         $result = $res->getDecodedOutput()->getOutput();
 
         return $result['value0'];
-    }
-
-    /** @return Depool[] */
-    private function findExistingDepoolsByCreateAddress(array $dbDepools, string $address): array
-    {
-        $depools = [];
-        foreach ($dbDepools as $dbDepool) {
-            if ($dbDepool->getInfo()['validatorWallet'] === $address) {
-                $depools[] = $dbDepool;
-            }
-        }
-
-        return $depools;
     }
 }

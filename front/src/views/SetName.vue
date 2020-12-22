@@ -2,26 +2,27 @@
   <v-card class="setName">
     <v-card-title>Set depool name (For depool's owner)</v-card-title>
     <v-card-text>
-        <p>
-          In order to set depool name you should call our special contract.
-          <br/>You must use the wallet used to create depool.
-          <br/>Fill form to generate call, apply and confirm transfer.
-          <br/>You can see name of your depool in 1-2 minutes in table.
-          <br/>You can add just name as well as site domain name.
-        </p>
-        <v-text-field v-model="wallet" label="Multisig address" outlined/>
-        <v-text-field v-model="name" maxlength="16" label="Desired Name" outlined/>
-        <div class="setName__code">
-          <code>wget
-            https://raw.githubusercontent.com/tonlabs/ton-labs-contracts/master/solidity/safemultisig/SafeMultisigWallet.abi.json</code>
-          <code>
-            tonos-cli call {{ wallet }} submitTransaction
-            '{"dest":"0:bd38e2c38a4177243f3a47c7248ea1c689798b83d77265e6fbd12f954a3ebe05","value":100000000,"bounce":true,"allBalance":false,"payload":"{{
-              payload
-            }}"}'
-            --abi "./SafeMultisigWallet.abi.json" --sign ""
-          </code>
-        </div>
+      <p>
+        In order to set depool name you should call our special contract.
+        <br/>You must use the wallet used to create depool.
+        <br/>Fill form to generate call, apply and confirm transfer.
+        <br/>You can see name of your depool in 1-2 minutes in table.
+        <br/>You can add just name as well as site domain name.
+      </p>
+      <v-text-field v-model="form.wallet" label="Multisig address" outlined/>
+      <v-text-field v-model="form.depool" label="Depool address" outlined/>
+      <v-text-field v-model="form.name" maxlength="16" label="Desired Name" outlined/>
+      <div class="setName__code">
+        <code>wget
+          https://raw.githubusercontent.com/tonlabs/ton-labs-contracts/master/solidity/safemultisig/SafeMultisigWallet.abi.json</code>
+        <code>
+          tonos-cli call {{ form.wallet }} submitTransaction
+          '{"dest":"0:2c2e4082141c1923137f9172f44863dcfb354655f503ae64e41d0a992cc393b4","value":100000000,"bounce":true,"allBalance":false,"payload":"{{
+            payload
+          }}"}'
+          --abi "./SafeMultisigWallet.abi.json" --sign ""
+        </code>
+      </div>
     </v-card-text>
   </v-card>
 </template>
@@ -34,18 +35,29 @@ const namesAbi = require('@/contracts/names.abi.json');
 
 export default {
   data: () => ({
-    wallet: '',
-    name: '',
+    form: {
+      wallet: '',
+      depool: '',
+      name: '',
+    },
     payload: '',
   }),
   watch: {
-    async name(value) {
-      if (value === '') {
-        this.payload = '';
-      } else {
-        const message = await utils.generateMessage(namesAbi, 'setName', {name: freeton.utils.stringToHex(value)});
-        this.payload = message.bodyBase64;
-      }
+    form: {
+      async handler(form) {
+        const depool = form.depool.trim();
+        const name = form.name.trim();
+        if ('' === depool || '' === name) {
+          this.payload = '';
+        } else {
+          const message = await utils.generateMessage(namesAbi, 'setName', {
+            depoolAddress: depool,
+            name: freeton.utils.stringToHex(name),
+          });
+          this.payload = message.bodyBase64;
+        }
+      },
+      deep: true,
     }
   },
 }
@@ -53,13 +65,13 @@ export default {
 
 <style lang="scss">
 .setName {
-    &__code code {
-      display: block;
-      line-break: anywhere;
-    }
+  &__code code {
+    display: block;
+    line-break: anywhere;
+  }
 
-    &__code code:not(:first-child) {
-      margin-top: 10px;
-    }
+  &__code code:not(:first-child) {
+    margin-top: 10px;
+  }
 }
 </style>

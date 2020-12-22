@@ -1,23 +1,12 @@
 {
   "ABI version": 2,
-  "header": [
-    "time"
-  ],
+  "header": ["time"],
   "functions": [
     {
       "name": "setName",
       "inputs": [
-        {
-          "name": "name",
-          "type": "bytes"
-        }
-      ],
-      "outputs": [
-      ]
-    },
-    {
-      "name": "clear",
-      "inputs": [
+        {"name":"depoolAddress","type":"address"},
+        {"name":"name","type":"bytes"}
       ],
       "outputs": [
       ]
@@ -27,10 +16,14 @@
       "inputs": [
       ],
       "outputs": [
-        {
-          "name": "value0",
-          "type": "map(address,bytes)"
-        }
+        {"components":[{"name":"msigAddress","type":"address"},{"name":"depoolAddress","type":"address"},{"name":"name","type":"bytes"}],"name":"value0","type":"tuple[]"}
+      ]
+    },
+    {
+      "name": "clear",
+      "inputs": [
+      ],
+      "outputs": [
       ]
     },
     {

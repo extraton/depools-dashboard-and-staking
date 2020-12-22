@@ -1,7 +1,13 @@
 pragma solidity >=0.6.0;
 
 contract Names {
-    mapping(address => bytes) list;
+    struct Item {
+        address msigAddress;
+        address depoolAddress;
+        bytes name;
+    }
+
+    Item[] items;
 
     modifier alwaysAccept {
         tvm.accept();
@@ -14,17 +20,22 @@ contract Names {
         _;
     }
 
-    function setName(bytes name) public onlyInternalMessage {
-        list[msg.sender] = name;
+    modifier acceptOnlyOwner {
+        require(msg.pubkey() == tvm.pubkey(), 101);
+        tvm.accept();
+        _;
+    }
+
+    function setName(address depoolAddress, bytes name) public onlyInternalMessage {
+        items.push(Item(msg.sender, depoolAddress, name));
         msg.sender.transfer(0, false, 2 | 64);
     }
 
-    function clear() public onlyInternalMessage {
-        delete list[msg.sender];
-        msg.sender.transfer(0, false, 2 | 64);
+    function getList() public view alwaysAccept returns (Item[]) {
+        return items;
     }
 
-    function getList() public view alwaysAccept returns (mapping(address => bytes)) {
-        return list;
+    function clear() public acceptOnlyOwner {
+        delete items;
     }
 }
