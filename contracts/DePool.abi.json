@@ -27,13 +27,10 @@
         {
           "name": "participantRewardFraction",
           "type": "uint8"
-        },
-        {
-          "name": "balanceThreshold",
-          "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "addOrdinaryStake",
@@ -43,7 +40,8 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "withdrawFromPoolingRound",
@@ -53,7 +51,8 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "addVestingStake",
@@ -75,7 +74,8 @@
           "type": "uint32"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "addLockStake",
@@ -97,7 +97,8 @@
           "type": "uint32"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "withdrawPart",
@@ -107,17 +108,22 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "withdrawAll",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "cancelWithdrawal",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "transferStake",
@@ -131,10 +137,12 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "participateInElections",
+      "id": "0x4E73744B",
       "inputs": [
         {
           "name": "queryId",
@@ -161,12 +169,15 @@
           "type": "bytes"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "ticktock",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "completeRoundWithChunk",
@@ -180,7 +191,8 @@
           "type": "uint8"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "completeRound",
@@ -194,7 +206,8 @@
           "type": "uint32"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "onStakeAccept",
@@ -212,7 +225,8 @@
           "type": "address"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "onStakeReject",
@@ -230,7 +244,8 @@
           "type": "address"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "onSuccessToRecoverStake",
@@ -244,7 +259,8 @@
           "type": "address"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "onFailToRecoverStake",
@@ -258,22 +274,40 @@
           "type": "address"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "terminator",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
+    },
+    {
+      "name": "setValidatorRewardFraction",
+      "inputs": [
+        {
+          "name": "fraction",
+          "type": "uint8"
+        }
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "receiveFunds",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "getLastRoundInfo",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "getParticipantInfo",
@@ -307,7 +341,7 @@
         {
           "components": [
             {
-              "name": "amount",
+              "name": "remainingAmount",
               "type": "uint64"
             },
             {
@@ -333,7 +367,7 @@
         {
           "components": [
             {
-              "name": "amount",
+              "name": "remainingAmount",
               "type": "uint64"
             },
             {
@@ -360,7 +394,8 @@
     },
     {
       "name": "getDePoolInfo",
-      "inputs": [],
+      "inputs": [
+      ],
       "outputs": [
         {
           "name": "poolClosed",
@@ -410,7 +445,8 @@
     },
     {
       "name": "getParticipants",
-      "inputs": [],
+      "inputs": [
+      ],
       "outputs": [
         {
           "name": "participants",
@@ -419,8 +455,20 @@
       ]
     },
     {
+      "name": "getDePoolBalance",
+      "inputs": [
+      ],
+      "outputs": [
+        {
+          "name": "value0",
+          "type": "int256"
+        }
+      ]
+    },
+    {
       "name": "getRounds",
-      "inputs": [],
+      "inputs": [
+      ],
       "outputs": [
         {
           "components": [
@@ -495,12 +543,15 @@
       ]
     }
   ],
-  "data": [],
+  "data": [
+  ],
   "events": [
     {
       "name": "DePoolClosed",
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+      ],
+      "outputs": [
+      ]
     },
     {
       "name": "RoundStakeIsAccepted",
@@ -514,7 +565,8 @@
           "type": "uint32"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "RoundStakeIsRejected",
@@ -528,7 +580,8 @@
           "type": "uint32"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "ProxyHasRejectedTheStake",
@@ -538,7 +591,8 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "ProxyHasRejectedRecoverRequest",
@@ -548,7 +602,8 @@
           "type": "uint64"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "RoundCompleted",
@@ -624,7 +679,8 @@
           "type": "tuple"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "StakeSigningRequested",
@@ -638,7 +694,8 @@
           "type": "address"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
     },
     {
       "name": "TooLowDePoolBalance",
@@ -648,7 +705,23 @@
           "type": "uint256"
         }
       ],
-      "outputs": []
+      "outputs": [
+      ]
+    },
+    {
+      "name": "RewardFractionsChanged",
+      "inputs": [
+        {
+          "name": "validator",
+          "type": "uint8"
+        },
+        {
+          "name": "participants",
+          "type": "uint8"
+        }
+      ],
+      "outputs": [
+      ]
     }
   ]
 }
