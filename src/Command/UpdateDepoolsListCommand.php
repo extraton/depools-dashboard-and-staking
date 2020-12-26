@@ -94,7 +94,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $filters = new Filters();
         $filters->add('code_hash', Filters::IN, array_keys(Depool::CODE_HASHES));
         if (count($depools) > 0) {
-            $filters->add('balance', Filters::LE, end($depools)['balance']);
+            $filters->add('balance', Filters::LE, bcsub(end($depools)['balance'], '1', 0));
         }
         $orderBy = new OrderBy();
         $orderBy->add('balance', OrderBy::DESC);
