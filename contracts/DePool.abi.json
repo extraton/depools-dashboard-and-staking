@@ -142,7 +142,6 @@
     },
     {
       "name": "participateInElections",
-      "id": "0x4E73744B",
       "inputs": [
         {
           "name": "queryId",
