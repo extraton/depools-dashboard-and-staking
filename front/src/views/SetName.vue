@@ -6,7 +6,7 @@
         In order to set depool name you should call our special contract.
         <br/>You must use the wallet used to create depool.
         <br/>Fill form to generate call, apply and confirm transfer.
-        <br/>You can see name of your depool in 1-2 minutes in table.
+        <br/>You can see name of your depool in 3-5 minutes in table.
         <br/>You can add just name as well as site domain name.
       </p>
       <v-text-field v-model="form.wallet" label="Multisig address" outlined/>

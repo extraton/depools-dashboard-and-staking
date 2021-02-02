@@ -11,7 +11,7 @@
         <v-card-text>
           <p>You have successful requested unstaking process.</p>
           <p>Assets will come back to your wallet within 50 hours.</p>
-          <p>Refresh page in 1-2 minutes to see changes.</p>
+          <p>Refresh page in 3-5 minutes to see changes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -27,7 +27,7 @@
         </v-card-title>
         <v-card-text>
           <p>Withdraw successfully canceled.</p>
-          <p>Refresh page in 1-2 minutes to see changes.</p>
+          <p>Refresh page in 3-5 minutes to see changes.</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>

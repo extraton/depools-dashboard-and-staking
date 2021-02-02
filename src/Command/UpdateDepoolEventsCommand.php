@@ -22,7 +22,7 @@ class UpdateDepoolEventsCommand extends AbstractCommand
 
     private EntityManagerInterface $entityManager;
     private Ton $ton;
-    private AbiType $depoolAbi;
+    private array $depoolAbis;
 
     public function __construct(
         LoggerInterface $logger,
@@ -32,7 +32,11 @@ class UpdateDepoolEventsCommand extends AbstractCommand
     {
         $this->entityManager = $entityManager;
         $this->ton = $ton;
-        $this->depoolAbi = AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json'));
+        $this->depoolAbis = [
+            1 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
+            3 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
+            4 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool4.abi.json'))
+        ];
         parent::__construct($logger);
     }
 
@@ -56,6 +60,7 @@ class UpdateDepoolEventsCommand extends AbstractCommand
             if ($depool->isDeleted()) {
                 continue;
             }
+            $abi = $this->depoolAbis[$depool->getVersion()];
             /** @var DepoolEventRepository $depoolEventRepository */
             $depoolEventRepository = $this->entityManager->getRepository(DepoolEvent::class);
             $lastEvent = $depoolEventRepository->findLastEventByDepool($depool);
@@ -65,7 +70,8 @@ class UpdateDepoolEventsCommand extends AbstractCommand
             $events = $this->getEvents($tonClient, $depool, $lastEvent);
             $events = $this->excludeExistingEvents($events, $lastEventsSameTime);
             foreach ($events as $event) {
-                $message = $tonClient->getAbi()->decodeMessageBody($this->depoolAbi, $event['body'])->getResponseData();
+                var_dump($event);
+                $message = $tonClient->getAbi()->decodeMessageBody($abi, $event['body'])->getResponseData();
                 $depoolEventCreateTs = \DateTime::createFromFormat('U', $event['created_at'], new \DateTimeZone('UTC'));
                 $depoolEvent = new DepoolEvent($depool, $event['id'], $message['name'], $message['value'], $depoolEventCreateTs);
                 $this->entityManager->persist($depoolEvent);

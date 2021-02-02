@@ -24,7 +24,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
 
     private EntityManagerInterface $entityManager;
     private Ton $ton;
-    private AbiType $depoolAbi;
+    private array $depoolAbis;
 
     public function __construct(
         LoggerInterface $logger,
@@ -34,7 +34,11 @@ class UpdateDepoolsListCommand extends AbstractCommand
     {
         $this->entityManager = $entityManager;
         $this->ton = $ton;
-        $this->depoolAbi = AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json'));
+        $this->depoolAbis = [
+            1 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
+            3 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
+            4 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool4.abi.json'))
+        ];
         parent::__construct($logger);
     }
 
@@ -58,11 +62,12 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $this->findDepoolsInBlockchainRecursive($tonClient, $blockchainDepools);
 
         foreach ($blockchainDepools as $blockchainDepool) {
+            $depoolVersion = Depool::CODE_HASHES[$blockchainDepool['code_hash']];
+            $abi = $this->depoolAbis[$depoolVersion];
             $depool = $this->findExistingDepool($dbDepools, $blockchainDepool['id']);
-            $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
-            $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
+            $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
+            $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
             if (null === $depool) {
-                $depoolVersion = Depool::CODE_HASHES[$blockchainDepool['code_hash']];
                 $depool = new Depool($net, $depoolVersion, $blockchainDepool['id'], $depoolInfo, $stakes);
             } else {
                 $depool->setInfo($depoolInfo);
@@ -72,7 +77,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
 
             /** @var DepoolRoundRepository $depoolRoundRepository */
             $depoolRoundRepository = $this->entityManager->getRepository(DepoolRound::class);
-            $blockchainRounds = $this->getRounds($tonClient, $blockchainDepool['boc'], $blockchainDepool['id']);
+            $blockchainRounds = $this->getRounds($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
             $lastDepoolRound = null !== $depool->getId()
                 ? $depoolRoundRepository->findLastRoundByDepool($depool)
                 : null;
@@ -150,11 +155,11 @@ class UpdateDepoolsListCommand extends AbstractCommand
         return null;
     }
 
-    private function getDepoolInfo(TonClient $tonClient, string $boc, string $address): array
+    private function getDepoolInfo(TonClient $tonClient, string $boc, string $address, AbiType $abi): array
     {
         $signer = Signer::fromNone();
         $result = $tonClient->getAbi()->encodeMessage(
-            $this->depoolAbi,
+            $abi,
             $signer,
             null,
             $callSet = (new CallSet('getDePoolInfo')),
@@ -167,18 +172,18 @@ class UpdateDepoolsListCommand extends AbstractCommand
             $message,
             $boc,
             null,
-            $this->depoolAbi
+            $abi
         );
         $result = $res->getDecodedOutput()->getOutput();
 
         return $result;
     }
 
-    private function getStakes(TonClient $tonClient, string $boc, string $address): array
+    private function getStakes(TonClient $tonClient, string $boc, string $address, AbiType $abi): array
     {
         $signer = Signer::fromNone();
         $participantsMessage = $tonClient->getAbi()->encodeMessage(
-            $this->depoolAbi,
+            $abi,
             $signer,
             null,
             new CallSet('getParticipants'),
@@ -189,13 +194,13 @@ class UpdateDepoolsListCommand extends AbstractCommand
             $participantsMessage,
             $boc,
             null,
-            $this->depoolAbi
+            $abi
         )->getDecodedOutput()->getOutput();
 
         $stakes = [];
         foreach ($participantAddresses['participants'] as $participantAddress) {
             $participantMessage = $tonClient->getAbi()->encodeMessage(
-                $this->depoolAbi,
+                $abi,
                 $signer,
                 null,
                 (new CallSet('getParticipantInfo'))->withInput(['addr' => $participantAddress]),
@@ -205,7 +210,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
                 $participantMessage,
                 $boc,
                 null,
-                $this->depoolAbi
+                $abi
             )->getDecodedOutput()->getOutput();
             $stakes[] = ['address' => $participantAddress, 'info' => $stake];
         }
@@ -213,11 +218,11 @@ class UpdateDepoolsListCommand extends AbstractCommand
         return $stakes;
     }
 
-    private function getRounds(TonClient $tonClient, string $boc, string $address): array
+    private function getRounds(TonClient $tonClient, string $boc, string $address, AbiType $abi): array
     {
         $signer = Signer::fromNone();
         $message = $tonClient->getAbi()->encodeMessage(
-            $this->depoolAbi,
+            $abi,
             $signer,
             null,
             new CallSet('getRounds'),
@@ -228,7 +233,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
             $message,
             $boc,
             null,
-            $this->depoolAbi
+            $abi
         )->getDecodedOutput()->getOutput();
 
         $isSorted = uksort($rounds['rounds'], function ($a, $b) {

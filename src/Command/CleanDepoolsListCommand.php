@@ -4,7 +4,6 @@ use App\Entity\Depool;
 use App\Entity\Net;
 use App\Ton;
 use Doctrine\ORM\EntityManagerInterface;
-use Extraton\TonClient\Entity\Abi\AbiType;
 use Extraton\TonClient\Entity\Net\Filters;
 use Extraton\TonClient\Entity\Net\ParamsOfQueryCollection;
 use Extraton\TonClient\TonClient;
