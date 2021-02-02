@@ -42,18 +42,18 @@
     </div>
     <div>
       <v-data-table
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :headers="headers"
-          :items="items"
-          :mobile-breakpoint="100"
-          :loading="loading"
-          :items-per-page="itemsPerPage"
-          :page.sync="page"
-          :search="search"
-          :sort-by="sortBy"
-          :sort-desc="sortDesc"
-          class="depoolsList__list"
+        @update:sort-by="updateSortBy"
+        @update:sort-desc="updateSortDesc"
+        :headers="headers"
+        :items="items"
+        :mobile-breakpoint="100"
+        :loading="loading"
+        :items-per-page="itemsPerPage"
+        :page.sync="page"
+        :search="search"
+        :sort-by="sortBy"
+        :sort-desc="sortDesc"
+        class="depoolsList__list"
       >
         <template v-slot:top>
           <table-search-toolbar @search="find" @added="loadItems"/>
@@ -64,6 +64,9 @@
               <addr-copy-button :address="props.item.address"/>
               <addr-explorer-button :link="props.item.link"/>
               <addr-link-button :address="props.item.address"/>
+            </td>
+            <td style="padding:0">
+              <v-icon>mdi-numeric-{{props.item.versionView}}</v-icon>
             </td>
             <td style="padding-left:0">
               <addr :address="props.item.address" :name="props.item.name" :link="props.item.link"/>
@@ -123,6 +126,7 @@ export default {
       loading: false,
       headers: [
         {sortable: false, filterable: false,},
+        {text: 'Ver', value: 'versionView', align: 'start', sortable: true, filterable: false,},
         {text: 'Name/Address', value: 'address', align: 'start', sortable: false,},
         {text: 'Stability', align: 'center', sortable: false, filterable: false,},
         {text: 'Min Stake', value: 'params.minStake', align: 'center', sortable: true, filterable: false,},
@@ -224,7 +228,7 @@ export default {
     }
 
     .v-data-table-header {
-      th:nth-child(2) {
+      th:nth-child(2),th:nth-child(3) {
         padding-left: 0 !important;
       }
     }
