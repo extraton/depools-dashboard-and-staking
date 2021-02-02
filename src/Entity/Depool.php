@@ -20,6 +20,13 @@ class Depool
     public const CODE_HASHES = [
         'b4ad6c42427a12a65d9a0bffb0c2730dd9cdf830a086d94636dab7784e13eb38' => 1,
         'a46c6872712ec49e481a7f3fc1f42469d8bd6ef3fae906aa5b9927e5a3fb3b6b' => 3,
+        '14e20e304f53e6da152eb95fffc993dbd28245a775d847eed043f7c78a503885' => 4,
+    ];
+
+    private const CONTRACT_VERSION_MAP = [
+        1 => 1,
+        3 => 2,
+        4 => 3
     ];
 
     /**
@@ -210,6 +217,11 @@ class Depool
     public function getVersion(): int
     {
         return $this->version;
+    }
+
+    public function getVersionView(): int
+    {
+        return self::CONTRACT_VERSION_MAP[$this->version];
     }
 
     public function setInfo(array $info): void
