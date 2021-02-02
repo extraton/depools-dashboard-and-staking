@@ -70,7 +70,6 @@ class UpdateDepoolEventsCommand extends AbstractCommand
             $events = $this->getEvents($tonClient, $depool, $lastEvent);
             $events = $this->excludeExistingEvents($events, $lastEventsSameTime);
             foreach ($events as $event) {
-                var_dump($event);
                 $message = $tonClient->getAbi()->decodeMessageBody($abi, $event['body'])->getResponseData();
                 $depoolEventCreateTs = \DateTime::createFromFormat('U', $event['created_at'], new \DateTimeZone('UTC'));
                 $depoolEvent = new DepoolEvent($depool, $event['id'], $message['name'], $message['value'], $depoolEventCreateTs);
