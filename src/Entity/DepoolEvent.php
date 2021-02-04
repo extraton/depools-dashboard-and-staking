@@ -17,6 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
 class DepoolEvent
 {
     public const NAME_ROUND_COMPLETE = 'RoundCompleted';
+    public const REWARD_FIELD_NAME_BY_VERSION = [
+        1 => 'rewards',
+        3 => 'rewards',
+        4 => 'participantReward',
+    ];
 
     /**
      * @ORM\Id

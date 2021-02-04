@@ -116,6 +116,7 @@ class CacheDepoolQueryCommand extends AbstractCommand
 
     private function compileStability(array $grid, Depool $depool): array
     {
+        $rewardsField = DepoolEvent::REWARD_FIELD_NAME_BY_VERSION[$depool->getVersion()];
         $dateFrom = \DateTime::createFromFormat('U', end($grid)['start'], new \DateTimeZone('UTC'));
         /** @var DepoolEventRepository $depoolEventRepository */
         $depoolEventRepository = $this->entityManager->getRepository(DepoolEvent::class);
@@ -126,7 +127,7 @@ class CacheDepoolQueryCommand extends AbstractCommand
             foreach ($depoolEvents as $depoolEvent) {
                 $createdAt = (int)$depoolEvent->getCreatedTs()->setTimezone(new \DateTimeZone('UTC'))->format('U');
                 $isDateBetween = $createdAt > $period['start'] && $createdAt < $period['end'];
-                if ($isDateBetween && hexdec($depoolEvent->getData()['round']['rewards']) > 0) {
+                if ($isDateBetween && hexdec($depoolEvent->getData()['round'][$rewardsField]) > 0) {
                     $hasReward = true;
                     break;
                 }
