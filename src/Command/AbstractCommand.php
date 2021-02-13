@@ -31,7 +31,7 @@ abstract class AbstractCommand extends Command
             'session' => uniqid(),
         ]);
 
-        $this->logger->info('Start command');
+        $this->logger->info('Start command', $input->getArguments());
 
         $store = new FlockStore();
         $factory = new LockFactory($store);
@@ -43,7 +43,7 @@ abstract class AbstractCommand extends Command
             return 1;
         }
         $result = $this->do($input, $output);
-        $this->logger->info("Command has successfully finished");
+        $this->logger->info("Command has successfully finished", $input->getArguments());
 
         return $result;
     }

@@ -45,25 +45,26 @@ class UpdateDepoolsListCommand extends AbstractCommand
     protected function configure()
     {
         $this->addArgument('netId', InputArgument::REQUIRED);
+        $this->addArgument('depoolVersion', InputArgument::REQUIRED);
     }
 
     protected function do(InputInterface $input, OutputInterface $output)
     {
         $netId = $input->getArgument('netId');
+        $depoolVersion = $input->getArgument('depoolVersion');
         $net = $this->entityManager->getRepository(Net::class)->find($netId);
         if (null === $net) {
             throw new \RuntimeException("Net '$netId' not found");
         }
         $tonClient = $this->ton->getClient($net->getServer());
+        $abi = $this->depoolAbis[$depoolVersion];
 
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
         $dbDepools = $depoolRepository->findAll();
         $blockchainDepools = [];
-        $this->findDepoolsInBlockchainRecursive($tonClient, $blockchainDepools);
+        $this->findDepoolsInBlockchainRecursive($tonClient, $blockchainDepools, $depoolVersion);
 
         foreach ($blockchainDepools as $blockchainDepool) {
-            $depoolVersion = Depool::CODE_HASHES[$blockchainDepool['code_hash']];
-            $abi = $this->depoolAbis[$depoolVersion];
             $depool = $this->findExistingDepool($dbDepools, $blockchainDepool['id']);
             $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
             $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
@@ -94,10 +95,10 @@ class UpdateDepoolsListCommand extends AbstractCommand
         return 0;
     }
 
-    private function findDepoolsInBlockchainRecursive(TonClient $tonClient, array &$depools): void
+    private function findDepoolsInBlockchainRecursive(TonClient $tonClient, array &$depools, $depoolVersion): void
     {
         $filters = new Filters();
-        $filters->add('code_hash', Filters::IN, array_keys(Depool::CODE_HASHES));
+        $filters->add('code_hash', Filters::EQ, array_flip(Depool::CODE_HASHES)[$depoolVersion]);
         if (count($depools) > 0) {
             $filters->add('balance', Filters::LE, bcsub(end($depools)['balance'], '1', 0));
         }
@@ -120,7 +121,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $this->addNoDuplicates($depools, $fetchedDepools);
 
         if (count($fetchedDepools) === self::FETCH_LIMIT) {
-            $this->findDepoolsInBlockchainRecursive($tonClient, $depools);
+            $this->findDepoolsInBlockchainRecursive($tonClient, $depools, $depoolVersion);
         }
     }
 
