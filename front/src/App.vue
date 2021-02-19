@@ -23,6 +23,12 @@
     </div>
 
     <div class="content">
+      <v-alert type="error">
+        Project Closed!
+        <br/>You can use this tool to withdraw stakes from depools until 1st april 2021.
+        <br/>After that you need to use tonos-cli application by ton-labs.
+        <br/>See details in official <a href="https://extraton.io" target="_blank">site</a>.
+      </v-alert>
       <router-view :search="search"/>
     </div>
   </v-app>
