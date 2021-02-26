@@ -95,7 +95,7 @@
               <span v-if="props.item.params.poolClosed">Depool's closing</span>
               <template v-else>
                 <div>
-                  <v-btn @click="stake(props.item.id)" color="secondary" x-small disabled>add stake</v-btn>
+                  <v-btn @click="stake(props.item.id)" color="secondary" x-small>add stake</v-btn>
                 </div>
                 <div>
                   <v-btn v-if="props.item.stakes.my.reinvest" @click="withdraw(props.item.id)" color="secondary"
@@ -108,7 +108,7 @@
                     <v-btn @click="ticktock(props.item.id)" x-small>ticktock</v-btn>
                   </div>
                   <div>
-                    <v-btn @click="cancelWithdrawing(props.item.id)" color="warning" x-small disabled>cancel withdrawing</v-btn>
+                    <v-btn @click="cancelWithdrawing(props.item.id)" color="warning" x-small>cancel withdrawing</v-btn>
                   </div>
                 </template>
               </template>
