@@ -54,7 +54,7 @@ spec:
         spec:
             containers:
                 -   name: depool-nginx
-                    image: extraton/depool-dashboard:0.8
+                    image: extraton/depool-dashboard:1.8.1
                     ports: [{containerPort: 80}]
                     command: ['/bin/bash']
                     args: ['-c', "php-fpm --nodaemonize & nginx -g 'daemon off;'"]
@@ -90,7 +90,7 @@ spec:
                       - chown -R 82:82 /vol1
             containers:
                 -   name: depool-cron
-                    image: extraton/depool-dashboard:0.8
+                    image: extraton/depool-dashboard:1.8.1
                     command: ['/bin/bash']
                     args: ['-c', "crontab /var/www/html/config/cron && crond -n"]
                     volumeMounts:
