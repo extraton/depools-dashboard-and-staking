@@ -1,4 +1,4 @@
-FROM extraton/depool-worker:0.1.3
+FROM extraton/depool-worker:0.2.0
 
 COPY ./ /var/www/html
 COPY ./deploy/default.nginx.conf /etc/nginx/conf.d
