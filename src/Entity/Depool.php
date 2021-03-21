@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DepoolRepository;
+use App\Ton;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -159,14 +160,14 @@ class Depool
         $total = '0';
         $items = [];
         foreach ($stakes as $stake) {
-            $total = bcadd($total, $stake['info']['total']);
+            $total = bcadd($total, Ton::getDecFormHexOrDec($stake['info']['total']));
             $items[] = [
                 'address' => $stake['address'],
                 'info' => [
-                    'total' => $stake['info']['total'],
-                    'withdrawValue' => $stake['info']['withdrawValue'],
+                    'total' => Ton::getDecFormHexOrDec($stake['info']['total']),
+                    'withdrawValue' => Ton::getDecFormHexOrDec($stake['info']['withdrawValue']),
                     'reinvest' => $stake['info']['reinvest'],
-                    'reward' => $stake['info']['reward'],
+                    'reward' => Ton::getDecFormHexOrDec($stake['info']['reward']),
                 ],
             ];
         }
@@ -181,11 +182,11 @@ class Depool
     public function compileParams()
     {
         return [
-            'minStake' => $this->getInfo()['minStake'],
-            'validatorAssurance' => $this->getInfo()['validatorAssurance'],
-            'participantRewardFraction' => $this->getInfo()['participantRewardFraction'],
-            'validatorRewardFraction' => $this->getInfo()['validatorRewardFraction'],
-            'balanceThreshold' => $this->getInfo()['balanceThreshold'],
+            'minStake' => Ton::getDecFormHexOrDec($this->getInfo()['minStake']),
+            'validatorAssurance' => Ton::getDecFormHexOrDec($this->getInfo()['validatorAssurance']),
+            'participantRewardFraction' => Ton::getDecFormHexOrDec($this->getInfo()['participantRewardFraction']),
+            'validatorRewardFraction' => Ton::getDecFormHexOrDec($this->getInfo()['validatorRewardFraction']),
+            'balanceThreshold' => Ton::getDecFormHexOrDec($this->getInfo()['balanceThreshold']),
             'poolClosed' => $this->getInfo()['poolClosed'],
         ];
     }

@@ -56,4 +56,9 @@ class Ton
     {
         return bcdiv(self::SECONDS_IN_YEAR, self::VALIDATORS_ELECTED_FOR, 0);
     }
+
+    public static function getDecFormHexOrDec($val)
+    {
+        return preg_match('/^0x/', $val) === 1 ? hexdec($val) : $val;
+    }
 }

@@ -62,9 +62,10 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
         $dbDepools = $depoolRepository->findAll();
         $blockchainDepools = [];
+        $this->logger->info('Fetching depools from blockchain');
         $this->findDepoolsInBlockchainRecursive($tonClient, $blockchainDepools, $depoolVersion);
         $depoolsTotalNum = count($blockchainDepools);
-        $this->logger->info(sprintf('Found %s', $depoolsTotalNum));
+        $this->logger->info(sprintf('Totally found %s depools', $depoolsTotalNum));
 
         foreach ($blockchainDepools as $k => $blockchainDepool) {
             $this->logger->info(sprintf('Handling %s of %s', $k, $depoolsTotalNum));
@@ -123,7 +124,10 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $fetchedDepools = $tonClient->getNet()->queryCollection($query)->getResult();
         $this->addNoDuplicates($depools, $fetchedDepools);
 
-        if (count($fetchedDepools) === self::FETCH_LIMIT) {
+        $fetchedDepoolsNum = count($fetchedDepools);
+        $this->logger->info(sprintf('Found %s depools(+%s)', count($depools), $fetchedDepoolsNum));
+        if ($fetchedDepoolsNum === self::FETCH_LIMIT) {
+            $this->logger->info('Fetch more...');
             $this->findDepoolsInBlockchainRecursive($tonClient, $depools, $depoolVersion);
         }
     }

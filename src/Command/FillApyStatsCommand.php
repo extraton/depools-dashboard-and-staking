@@ -62,9 +62,9 @@ class FillApyStatsCommand extends AbstractCommand
                 $depoolEvent = $depoolEventRepository->findRoundCompleteByDepoolBetween($depool, $roundDateStart, $roundDateEnd);
                 if (null !== $depoolEvent) {
                     $round = $depoolEvent->getData()['round'];
-                    $recoveredStake = $round['recoveredStake'];
+                    $recoveredStake = Ton::getDecFormHexOrDec($round['recoveredStake']);
                     if (bccomp($recoveredStake, '0') === 1) {
-                        $roundProfits[] = bcmul('100', bcsub('1', bcdiv($round['stake'], $recoveredStake, 8), 8), 6);
+                        $roundProfits[] = bcmul('100', bcsub('1', bcdiv(Ton::getDecFormHexOrDec($round['stake']), $recoveredStake, 8), 8), 6);
                     }
                 }
             }
