@@ -63,8 +63,11 @@ class UpdateDepoolsListCommand extends AbstractCommand
         $dbDepools = $depoolRepository->findAll();
         $blockchainDepools = [];
         $this->findDepoolsInBlockchainRecursive($tonClient, $blockchainDepools, $depoolVersion);
+        $depoolsTotalNum = count($blockchainDepools);
+        $this->logger->info(sprintf('Found %s', $depoolsTotalNum));
 
-        foreach ($blockchainDepools as $blockchainDepool) {
+        foreach ($blockchainDepools as $k => $blockchainDepool) {
+            $this->logger->info(sprintf('Handling %s of %s', $k, $depoolsTotalNum));
             $depool = $this->findExistingDepool($dbDepools, $blockchainDepool['id']);
             $stakes = $this->getStakes($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
             $depoolInfo = $this->getDepoolInfo($tonClient, $blockchainDepool['boc'], $blockchainDepool['id'], $abi);
