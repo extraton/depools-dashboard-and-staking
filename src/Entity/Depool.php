@@ -159,14 +159,14 @@ class Depool
         $total = '0';
         $items = [];
         foreach ($stakes as $stake) {
-            $total = bcadd($total, hexdec($stake['info']['total']));
+            $total = bcadd($total, $stake['info']['total']);
             $items[] = [
                 'address' => $stake['address'],
                 'info' => [
-                    'total' => hexdec($stake['info']['total']),
-                    'withdrawValue' => hexdec($stake['info']['withdrawValue']),
+                    'total' => $stake['info']['total'],
+                    'withdrawValue' => $stake['info']['withdrawValue'],
                     'reinvest' => $stake['info']['reinvest'],
-                    'reward' => hexdec($stake['info']['reward']),
+                    'reward' => $stake['info']['reward'],
                 ],
             ];
         }
@@ -181,11 +181,11 @@ class Depool
     public function compileParams()
     {
         return [
-            'minStake' => hexdec($this->getInfo()['minStake']),
-            'validatorAssurance' => hexdec($this->getInfo()['validatorAssurance']),
-            'participantRewardFraction' => hexdec($this->getInfo()['participantRewardFraction']),
-            'validatorRewardFraction' => hexdec($this->getInfo()['validatorRewardFraction']),
-            'balanceThreshold' => hexdec($this->getInfo()['balanceThreshold']),
+            'minStake' => $this->getInfo()['minStake'],
+            'validatorAssurance' => $this->getInfo()['validatorAssurance'],
+            'participantRewardFraction' => $this->getInfo()['participantRewardFraction'],
+            'validatorRewardFraction' => $this->getInfo()['validatorRewardFraction'],
+            'balanceThreshold' => $this->getInfo()['balanceThreshold'],
             'poolClosed' => $this->getInfo()['poolClosed'],
         ];
     }

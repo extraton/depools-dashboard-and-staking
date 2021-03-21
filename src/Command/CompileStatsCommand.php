@@ -61,15 +61,16 @@ class CompileStatsCommand extends AbstractCommand
                 continue;
             }
             $stakes = $depool->compileStakes();
-            $membersNum += hexdec($stakes['participantsNum']);
+            $membersNum += preg_match('/^0x/', $stakes['participantsNum']) === 1 ? hexdec($stakes['participantsNum']) : $stakes['participantsNum'];
             $assetsAmountNano += $stakes['total'];
 
             $depoolEvent = $depoolEventRepository->findRoundCompleteByDepoolBetween($depool, $lastRoundDateStart, $lastRoundDateEnd);
             if (null !== $depoolEvent) {
                 $round = $depoolEvent->getData()['round'];
-                $recoveredStake = hexdec($round['recoveredStake']);
+                $recoveredStake = preg_match('/^0x/', $round['recoveredStake']) === 1 ? hexdec($round['recoveredStake']) : $round['recoveredStake'];
                 if (bccomp($recoveredStake, '0') === 1) {
-                    $roundProfits[] = bcmul('100', bcsub('1', bcdiv(hexdec($round['stake']), $recoveredStake, 8), 8), 6);
+                    $stake = preg_match('/^0x/', $round['stake']) === 1 ? hexdec($round['stake']) : $round['stake'];
+                    $roundProfits[] = bcmul('100', bcsub('1', bcdiv($stake, $recoveredStake, 8), 8), 6);
                 }
             }
         }

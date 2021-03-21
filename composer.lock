@@ -1438,16 +1438,16 @@
         },
         {
             "name": "extraton/php-ton-client",
-            "version": "1.5.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/extraton/php-ton-client.git",
-                "reference": "2d3a3a6ac3423255348785eae79f3086c615482b"
+                "reference": "2970415348fdf012a6dca4f56cd5ed958e1c9840"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/extraton/php-ton-client/zipball/2d3a3a6ac3423255348785eae79f3086c615482b",
-                "reference": "2d3a3a6ac3423255348785eae79f3086c615482b",
+                "url": "https://api.github.com/repos/extraton/php-ton-client/zipball/2970415348fdf012a6dca4f56cd5ed958e1c9840",
+                "reference": "2970415348fdf012a6dca4f56cd5ed958e1c9840",
                 "shasum": ""
             },
             "require": {
@@ -1494,7 +1494,7 @@
                 "ton",
                 "ton crystal"
             ],
-            "time": "2021-03-14T14:52:17+00:00"
+            "time": "2021-03-20T00:19:10+00:00"
         },
         {
             "name": "friendsofphp/proxy-manager-lts",

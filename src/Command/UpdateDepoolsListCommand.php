@@ -83,7 +83,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
                 ? $depoolRoundRepository->findLastRoundByDepool($depool)
                 : null;
             foreach ($blockchainRounds as $blockchainRound) {
-                $rid = hexdec($blockchainRound['id']);
+                $rid = $blockchainRound['id'];
                 if (null === $lastDepoolRound || $rid > $lastDepoolRound->getRid()) {
                     $round = new DepoolRound($depool, $rid, $blockchainRound);
                     $this->entityManager->persist($round);
@@ -238,7 +238,7 @@ class UpdateDepoolsListCommand extends AbstractCommand
         )->getDecodedOutput()->getOutput();
 
         $isSorted = uksort($rounds['rounds'], function ($a, $b) {
-            return hexdec($a) <=> hexdec($b);
+            return $a <=> $b;
         });
         if (false === $isSorted) {
             throw new \RuntimeException('Sorting failed');

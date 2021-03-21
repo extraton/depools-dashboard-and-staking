@@ -127,7 +127,10 @@ class CacheDepoolQueryCommand extends AbstractCommand
             foreach ($depoolEvents as $depoolEvent) {
                 $createdAt = (int)$depoolEvent->getCreatedTs()->setTimezone(new \DateTimeZone('UTC'))->format('U');
                 $isDateBetween = $createdAt > $period['start'] && $createdAt < $period['end'];
-                if ($isDateBetween && hexdec($depoolEvent->getData()['round'][$rewardsField]) > 0) {
+                $depoolEventRewardField = preg_match('/^0x/', $depoolEvent->getData()['round'][$rewardsField]) === 1
+                    ? hexdec($depoolEvent->getData()['round'][$rewardsField])
+                    : $depoolEvent->getData()['round'][$rewardsField];
+                if ($isDateBetween && $depoolEventRewardField > 0) {
                     $hasReward = true;
                     break;
                 }
