@@ -9404,6 +9404,11 @@ vue-loader@^15.9.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-qr@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/vue-qr/-/vue-qr-2.3.0.tgz#d659ee9db2bc717a2b46bd0e7a5414e75a7a3bba"
+  integrity sha512-qcmMKNVz4dSZjXsUIQmK/QoODvOYg8+EyCaCynZfwcUJk4mjsevEv+z4uYoRz0Or1ET9UMwjV7/GQdHTSFCIIA==
+
 vue-resource@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/vue-resource/-/vue-resource-1.5.1.tgz#0f3d685e3254d21800bebd966edcf56c34b3b6e4"

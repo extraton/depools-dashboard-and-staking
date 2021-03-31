@@ -60,10 +60,15 @@
         </template>
         <template slot="item" slot-scope="props">
           <tr :class="{'depoolsList__list__row--namedBorder': isNamedBorder(props.index)}">
-            <td style="width:120px">
-              <addr-copy-button :address="props.item.address"/>
-              <addr-explorer-button :link="props.item.link"/>
-              <addr-link-button :address="props.item.address"/>
+            <td class="depoolsList__list__row__buttons">
+              <div>
+                <addr-copy-button :address="props.item.address"/>
+                <addr-explorer-button :link="props.item.link"/>
+              </div>
+              <div>
+                <addr-link-button :address="props.item.address"/>
+                <qr-button :address="props.item.address"/>
+              </div>
             </td>
             <td style="padding:0">
               <v-icon>mdi-numeric-{{props.item.versionView}}</v-icon>
@@ -104,12 +109,14 @@ import Stability from "@/components/Stability";
 import AddrCopyButton from "@/components/AddrCopyButton";
 import AddrExplorerButton from "@/components/AddrExplorerButton";
 import AddrLinkButton from "@/components/AddrLinkButton";
+import QrButton from "@/components/QrButton";
 import MainStat from "@/components/MainStat";
 
 export default {
   components: {
     MainStat,
-    AddrLinkButton, Stability, TableSearchToolbar, StakingDialog, Addr, AddrCopyButton, AddrExplorerButton
+    AddrLinkButton, Stability, TableSearchToolbar, StakingDialog, Addr, AddrCopyButton, AddrExplorerButton,
+    QrButton,
   },
   data() {
     return {
@@ -222,6 +229,11 @@ export default {
     }
 
     &__row {
+      &__buttons {
+        width: 90px;
+        min-width: 90px;
+      }
+
       &--namedBorder td {
         border-bottom: 3px double #ffffff !important;
       }
