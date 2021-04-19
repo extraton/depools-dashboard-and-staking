@@ -28,6 +28,7 @@ services:
       - '@logger'
       - '@doctrine.orm.entity_manager'
       - '@App\Ton'
+      - '@doctrine'
     tags:
       - { name: 'console.command', command: 'depool:events:update' }
 

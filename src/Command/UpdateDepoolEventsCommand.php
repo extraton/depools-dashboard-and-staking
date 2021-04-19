@@ -5,7 +5,9 @@ use App\Entity\DepoolEvent;
 use App\Entity\Net;
 use App\Repository\DepoolEventRepository;
 use App\Ton;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Extraton\TonClient\Entity\Abi\AbiType;
 use Extraton\TonClient\Entity\Net\Filters;
 use Extraton\TonClient\Entity\Net\OrderBy;
@@ -23,15 +25,18 @@ class UpdateDepoolEventsCommand extends AbstractCommand
     private EntityManagerInterface $entityManager;
     private Ton $ton;
     private array $depoolAbis;
+    private ManagerRegistry $doctrine;
 
     public function __construct(
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        Ton $ton
+        Ton $ton,
+        ManagerRegistry $doctrine
     )
     {
         $this->entityManager = $entityManager;
         $this->ton = $ton;
+        $this->doctrine = $doctrine;
         $this->depoolAbis = [
             1 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
             3 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
@@ -73,7 +78,12 @@ class UpdateDepoolEventsCommand extends AbstractCommand
                 $message = $tonClient->getAbi()->decodeMessageBody($abi, $event['body'])->getResponseData();
                 $depoolEventCreateTs = \DateTime::createFromFormat('U', $event['created_at'], new \DateTimeZone('UTC'));
                 $depoolEvent = new DepoolEvent($depool, $event['id'], $message['name'], $message['value'], $depoolEventCreateTs);
-                $this->entityManager->persist($depoolEvent);
+                try {//@TODO hack duplicate entry
+                    $this->entityManager->persist($depoolEvent);
+                    $this->entityManager->flush();
+                } catch (UniqueConstraintViolationException $e) {
+                    $this->doctrine->resetManager();
+                }
             }
         }
         $this->entityManager->flush();
