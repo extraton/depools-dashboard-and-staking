@@ -5,9 +5,7 @@ use App\Entity\DepoolEvent;
 use App\Entity\Net;
 use App\Repository\DepoolEventRepository;
 use App\Ton;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Extraton\TonClient\Entity\Abi\AbiType;
 use Extraton\TonClient\Entity\Net\Filters;
 use Extraton\TonClient\Entity\Net\OrderBy;
@@ -25,18 +23,15 @@ class UpdateDepoolEventsCommand extends AbstractCommand
     private EntityManagerInterface $entityManager;
     private Ton $ton;
     private array $depoolAbis;
-    private ManagerRegistry $doctrine;
 
     public function __construct(
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        Ton $ton,
-        ManagerRegistry $doctrine
+        Ton $ton
     )
     {
         $this->entityManager = $entityManager;
         $this->ton = $ton;
-        $this->doctrine = $doctrine;
         $this->depoolAbis = [
             1 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
             3 => AbiType::fromJson(file_get_contents(__DIR__ . '/../../contracts/DePool.abi.json')),
@@ -61,7 +56,9 @@ class UpdateDepoolEventsCommand extends AbstractCommand
 
         $depoolRepository = $this->entityManager->getRepository(Depool::class);
         $depools = $depoolRepository->findAll();
-        foreach ($depools as $depool) {
+        $depoolsTotalNum = count($depools);
+        foreach ($depools as $k => $depool) {
+            $this->logger->info(sprintf('Handling %s of %s', $k, $depoolsTotalNum));
             if ($depool->isDeleted()) {
                 continue;
             }
@@ -78,13 +75,15 @@ class UpdateDepoolEventsCommand extends AbstractCommand
                 $message = $tonClient->getAbi()->decodeMessageBody($abi, $event['body'])->getResponseData();
                 $depoolEventCreateTs = \DateTime::createFromFormat('U', $event['created_at'], new \DateTimeZone('UTC'));
                 $depoolEvent = new DepoolEvent($depool, $event['id'], $message['name'], $message['value'], $depoolEventCreateTs);
-                try {//@TODO hack duplicate entry
+                //@TODO hack duplicate
+                $duplicate = $depoolEventRepository->findOneBy(['depool' => $depool, 'eid' => $depoolEvent->getEid()]);
+                if (null !== $duplicate) {
+                    $this->logger->warning("Duplicate event depool {$depool->getId()} event {$depoolEvent->getEid()}");
+                } else {
                     $this->entityManager->persist($depoolEvent);
-                    $this->entityManager->flush();
-                } catch (UniqueConstraintViolationException $e) {
-                    $this->doctrine->resetManager();
                 }
             }
+            $this->entityManager->flush();
         }
         $this->entityManager->flush();
 
