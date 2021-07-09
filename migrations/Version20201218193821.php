@@ -16,7 +16,7 @@ final class Version20201218193821 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $this->addSql("INSERT INTO net VALUES (1, 'main.ton.dev'), (2, 'net.ton.dev')");
+        $this->addSql("INSERT INTO net VALUES (1, 'main2.ton.dev'), (2, 'net1.ton.dev')");
     }
 
     public function down(Schema $schema) : void

@@ -9,7 +9,7 @@ const _ = {
   client: null,
   async getClient() {
     if (null === this.client) {
-      this.client = await TONClient.create({servers: ['main.ton.dev']});
+      this.client = await TONClient.create({servers: ['main2.ton.dev']});
     }
     return this.client;
   }
