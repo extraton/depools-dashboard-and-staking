@@ -13,7 +13,7 @@
     "bignumber.js": "^9.0.1",
     "chartist": "^0.11.4",
     "core-js": "^3.6.5",
-    "freeton": "^0.4.1",
+    "freeton": "^0.10.0",
     "roboto-fontface": "*",
     "semver": "^7.3.2",
     "ton-client-web-js": "^0.28.0",
